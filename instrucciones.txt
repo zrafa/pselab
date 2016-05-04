@@ -1,0 +1,57 @@
+
+Hola a todos,
+  Hemos creado el proyecto "pselab" en github, para que realicemos práctica de git a un repositorio remoto compartido.
+
+https://github.com/zrafa/pselab
+
+En particular se debe "empujar" (mala traducción para git push) al repositorio en github los 3 trabajos prácticos. La fecha límite de entrega es el próximo Lunes 9 de Mayo.
+
+Para el tp3 tiene que estar implementado el buffer circular y las versiones para i386 y avr.
+Además, se debe proveer un pequeño archivo de texto README a cada trabajo práctico, que nos indique de que manera se puede ejecutar los tests para verificar las implementaciones que se hicieron.
+
+Para la parte de git haremos lo siguiente :
+
+1. Crear una cuenta en la web de github y enviarnos el nombre de usuario a través del foro consulta o por correo. Nosotros agregaremos el usuario al proyecto pselab de github, para que tengamos permiso de hacer push a ese repositorio.
+2. Luego de que hayamos sido agregados al proyecto pueden subir los trabajos prácticos. 
+Para esta tarea vamos a utilizar la siguiente convención :
+
+Agreguen al proyecto un directorio llamado nombreapellido. Como ejemplo observen el que ya he agregado (rafaelzurita/), y dentro de ese directorio colocan las resoluciones de los trabajos prácticos en directorios diferentes, llamados pse_tp1, pse_tp2 y pse_tp3 respectivamente. 
+Finalmente, la estructura de directorios tiene que quedar como la de este ejemplo :
+
+proyecto pselab raiz
+                 |--------> rafaelzurita/
+                                 |-----> pse_tp1/
+                                 |-----> pse_tp2/
+                                 |-----> pse_tp3/
+
+La entrega de los trabajos prácticos es individual, aún cuando hayan sido resueltos en grupo. Asi que es lógico que repitan los archivos pero es para que todos realicemos la práctica de git.
+
+IMPORTANTE: No suben al repositorio remoto archivos objetos ni binarios ejecutables. Solo archivos de texto. Tampoco suben archivos PDF. 
+
+En particular, y como ejemplo, estos son los comandos y pasos que he seguido para subir la resolución del primer práctico siguiendo esta convención:
+
+git clone https://github.com/zrafa/pselab.git       # el clone se hace una unica vez
+cd pselab/
+git pull         #siempre un git pull antes de comenzar a trabajar
+
+mkdir rafaelzurita
+cd rafaelzurita
+mkdir pse_tp1
+cp /tmp/pse_tp1/*   pse_tp1/  # copio mi resolucion del tp1 al nuevo directorio
+cd pse_tp1
+make clean                    # nos aseguramos que no subiremos al repo remoto archivos objetos o binarios ejecutables
+rm *pdf                 # quito el archivo pdf del enunciado del practico
+cd ../..     # retrocedo dos directorios para posicionarme en el directorio raiz
+
+git add rafaelzurita              # el git add es recursivo, asi que agrega el directorio y sus subdirectorios y archivos
+git commit -m "Agrego la resolucion del tp1"
+
+git pull      # importante antes de hacer un push. Resolvemos conflictos si hubiera
+git push    # el push hará una conexion web a github y les pide el usuario y clave de github
+
+Usen este ejemplo como referencia. Para crear los directorios, copiar y borrar archivos lo pueden realizar como a cada uno le parezca mas comodo. Este ejemplo utiliza comandos desde el shell sólo de referencia. Los comandos de git si conviene ejecutarlos desde el shell. Existen herramientas graficas de git que vienen en Linux, pero via comandos se comprende mejor la sintaxis.
+
+Cualquier consulta de esta práctica en git o de la entrega de los tps podemos utilizar el foro consultas.
+
+Saludos,
+La cátedra
