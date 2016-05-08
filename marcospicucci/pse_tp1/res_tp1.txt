@@ -1,0 +1,13 @@
+1) paquetes instalados: binutils-avr, gcc-avr, avr-libc
+
+2) hago make all primero. Desp make clean para borrar los archivos que se crearon. Siempre se usan esas etiquetas?(all:, clean:)
+
+3) $ file led_blink.elf : ELF 32-bit LSB executable, Atmel AVR 8-bit, version 1 (SYSV), statically linked, not stripped.
+   $ file led_blink.o: ELF 32-bit LSB relocatable, Atmel AVR 8-bit, version 1 (SYSV), not stripped.
+
+4) $ dpkg -L binutils-avr
+
+5) encabezados .h estan en /usr/lib/avr/include/, /usr/share/doc/avr-libc/examples
+
+6 $ whereis avr-gcc:  /usr/bin/avr-gcc
+
