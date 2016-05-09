@@ -1,0 +1,1 @@
+situarse en cada una de las carpetas y hacer un make
