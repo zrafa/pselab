@@ -1,0 +1,7 @@
+sudo apt-get install gcc-avr binutils-avr gdb-avr avr-libc avrdude
+
+Procesando disparadores para libc-bin (2.19-18+deb8u3) ...
+W: Duplicate sources.list entry http://repository.spotify.com/ stable/non-free amd64 Packages (/var/lib/apt/lists/repository.spotify.com_dists_stable_non-free_binary-amd64_Packages)
+W: Duplicate sources.list entry http://repository.spotify.com/ stable/non-free i386 Packages (/var/lib/apt/lists/repository.spotify.com_dists_stable_non-free_binary-i386_Packages)
+W: Tal vez deba ejecutar «apt-get update» para corregir estos problemas
+
