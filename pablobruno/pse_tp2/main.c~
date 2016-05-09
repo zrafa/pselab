@@ -1,0 +1,110 @@
+/**********************************************************************
+ *
+ * Filename:    main.c
+ * 
+ * Description: The main program file the serial driver example.
+ *
+ *
+ **********************************************************************/
+
+#include "stdint.h"
+#include "serial.h"
+
+
+#define GPIO 0x25
+#define GPIO_HL 0x24
+
+
+#define CYCLES_PER_MS (9000)
+
+void delay_ms(int milliseconds)
+ {
+ 
+ long volatile cycles = (milliseconds * CYCLES_PER_MS);
+   while (cycles != 0)
+    cycles--;
+ }
+
+
+toggleInit (){
+//unsigned char mascaraEncender=0x20;
+ unsigned char puertoB;
+ volatile unsigned char * valueGPIO;
+   valueGPIO=(volatile unsigned char *)GPIO;
+   puertoB= (*(valueGPIO) | 0x20); 
+   
+   *valueGPIO=puertoB;
+   
+
+}
+
+
+toggleLed(int queHacer)
+{
+//unsigned char mascaraEncender=0x20;
+//unsigned char mascaraApagar=0x357;
+ unsigned char puertoHL;
+ volatile unsigned char * valueGPIO_HL;
+   valueGPIO_HL=(volatile unsigned char *)(GPIO_HL);
+   
+if (queHacer==1)
+   {
+    puertoHL= (*(valueGPIO_HL) | (0x20)); 
+   }
+else 
+   {
+    puertoHL= *valueGPIO_HL & (0x357);
+   }
+
+   *valueGPIO_HL=puertoHL;
+   
+}
+
+
+/**********************************************************************
+ *
+ * Function:    main
+ *
+ **********************************************************************/
+int main(void)
+{
+toggleLed (1);
+ 
+delay_ms(200);
+toggleLed(0);
+    char rcvChar = 0;
+
+    /* Configure the UART for the serial driver. */
+    serial_init();
+toggleLed (1);
+ 
+delay_ms(200);
+toggleLed(0);
+
+    serial_put_char('s');
+    serial_put_char('t');
+    serial_put_char('a');
+    serial_put_char('r');
+    serial_put_char('t');
+    serial_put_char('\r');
+    serial_put_char('\n');
+
+toggleLed (1);
+ 
+delay_ms(200);
+toggleLed(0);
+
+    while (rcvChar != 'q')
+    {
+        /* Wait for an incoming character. */
+        rcvChar = serial_get_char();
+
+        /* Echo the character back along with a carriage return and line feed. */
+        serial_put_char(rcvChar);
+        serial_put_char('\r');
+        serial_put_char('\n');
+    }
+
+    return 0;
+}
+
