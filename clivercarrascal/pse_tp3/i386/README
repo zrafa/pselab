@@ -1,0 +1,5 @@
+Para simular el buffer circular ejecutar el archivo test.elf. 
+El programa pedira la longitud del buffer, que puede ser de 1 a 99.
+Para ingresar un caracter simplemente escribir el caracter y presionar enter.
+Si se quiere eliminar el primer elemento del buffer introducir el caracter '='.
+Si se llena el buffer no se podra introducir ningun otro caracter, aunque si se puede eliminar.
