@@ -1,0 +1,36 @@
+CC = avr-gcc		#Compilador C
+CXX = avr-g++		#Compilador C++
+OBJCOPY = avr-objcopy
+TTY = /dev/ttyUSB0
+
+INCLUDES = -I .
+SOURCES = new.o circbuf.o scc.o serial.o main.o
+
+MMCU = atmega328p
+CPU_CLK = 16000000UL
+CFLAGS = -Os -DF_CPU=$(CPU_CLK) -mmcu=$(MMCU)
+HFLAGS = -O ihex -R .eeprom
+
+MAIN = test
+
+all: $(SOURCES) link hex	#va a linkear todos los sources, si no existen va a buscar si hay alguna regla mas adelante que cree dichos sources
+
+clean:
+	rm *.o *.hex $(MAIN)
+
+link: 
+	$(CXX) -mmcu=$(MMCU) -o $(MAIN) $(SOURCES)
+
+hex:
+	$(OBJCOPY) $(HFLAGS) $(MAIN) $(MAIN).hex
+
+%.c%.o:
+	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@
+
+flash:
+	avrdude -F -V -c arduino -p ATMEGA328P -P $(TTY) -b 115200 -U flash:w:$(MAIN)
+
+#aca dice: si se necesita un *.o ejecutamos lo siguiente, siempre y cuando se tenga el correspondiente *.cpp
+%.o:%.cpp
+	$(CXX) -c $(CFLAGS) -fno-exceptions $(INCLUDES) $< -o $@
+
