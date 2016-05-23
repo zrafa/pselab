@@ -1,0 +1,18 @@
+****************************************************************************
+									EMULADOR
+****************************************************************************
+
+EL PROGRAMA TEST BASICAMENTE:
+
+Prueba el bufer circular.
+0) con la opción cero creo el buffer circular, pide qu ingrese la longitud del buffer y se ingresa por teclado.
+1) con la opción 1 añado un caracter por teclado.
+2) con la opción 2 saco del buffer (leo) el caracter apuntado por head.
+3)con 5 puedo imprimir el buffer y el valor de head y tail.
+
+****************************************************************************
+el programa MAIN, envía la cadena Hello, world! y luego cualquier caracter que es tecleado lo transmite al minicom
+
+
+
+
