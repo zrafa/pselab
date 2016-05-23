@@ -119,10 +119,13 @@ void
 SCC::txStart(int channel)
 {
 	channeltx=channel;
-	puerto_serial->status_control_b = puerto_serial->status_control_b | 0b00100000;		//habilito interrupcion por buffer vacio
-	/* Mientras la cola no está vacía enviar el siguiente byte */
-	while(txQueue[channel]->isEmpty()!=1);
-	puerto_serial->status_control_b = puerto_serial->status_control_b & 0b11011111;		//deshabilito interrupcion por buffer vacio
+	if(txQueue[channel]->isEmpty()!=1)
+	{
+		puerto_serial->status_control_b = puerto_serial->status_control_b | 0b00100000;		//habilito interrupcion por buffer vacio
+		/* Mientras la cola no está vacía enviar el siguiente byte */
+		while(txQueue[channel]->isEmpty()!=1);
+		puerto_serial->status_control_b = puerto_serial->status_control_b & 0b11011111;		//deshabilito interrupcion por buffer vacio
+	}
 }   /* txStart() */
 
 

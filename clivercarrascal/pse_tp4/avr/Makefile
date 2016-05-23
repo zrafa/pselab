@@ -1,12 +1,36 @@
-all:
-	avr-g++ -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o new.o new.cpp
-	avr-g++ -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o circbuf.o circbuf.cpp -I .
-	avr-g++ -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o scc.o scc.cpp -I .
-	avr-g++ -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o serial.o serial.cpp -I .
-	avr-g++ -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o main.o main.cpp
-	avr-gcc -mmcu=atmega328p new.o circbuf.o scc.o serial.o main.o -o appserial.elf
-	avr-objcopy -O ihex -R .eeprom appserial.elf appserial.hex
-	avrdude -v -v -v -v -p atmega328p -c arduino -P /dev/ttyUSB0 -b 57600 -D -U flash:w:appserial.hex:i 
+CC = avr-gcc		#Compilador C
+CXX = avr-g++		#Compilador C++
+OBJCOPY = avr-objcopy
+TTY = /dev/ttyUSB0
+
+INCLUDES = -I .
+SOURCES = new.o circbuf.o scc.o serial.o main.o
+
+MMCU = atmega328p
+CPU_CLK = 16000000UL
+CFLAGS = -Os -DF_CPU=$(CPU_CLK) -mmcu=$(MMCU)
+HFLAGS = -O ihex -R .eeprom
+
+MAIN = test
+
+all: $(SOURCES) link hex	#va a linkear todos los sources, si no existen va a buscar si hay alguna regla mas adelante que cree dichos sources
 
 clean:
-	rm *.o *.hex *.elf
+	rm *.o *.hex *.elf $(MAIN)
+
+link: 
+	$(CXX) -mmcu=$(MMCU) -o $(MAIN) $(SOURCES)
+
+hex:
+	$(OBJCOPY) $(HFLAGS) $(MAIN) $(MAIN).hex
+
+%.c%.o:
+	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@
+
+flash:
+	avrdude -F -V -c arduino -p ATMEGA328P -P $(TTY) -b 115200 -U flash:w:$(MAIN)
+
+#aca dice: si se necesita un *.o ejecutamos lo siguiente, siempre y cuando se tenga el correspondiente *.cpp
+%.o:%.cpp
+	$(CXX) -c $(CFLAGS) -fno-exceptions $(INCLUDES) $< -o $@
+
