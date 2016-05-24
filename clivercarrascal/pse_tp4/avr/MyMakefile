@@ -16,7 +16,7 @@ MAIN = test
 all: $(SOURCES) link hex	#va a linkear todos los sources, si no existen va a buscar si hay alguna regla mas adelante que cree dichos sources
 
 clean:
-	rm *.o *.hex *.elf $(MAIN)
+	rm *.o *.hex $(MAIN)
 
 link: 
 	$(CXX) -mmcu=$(MMCU) -o $(MAIN) $(SOURCES)
