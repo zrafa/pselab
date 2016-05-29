@@ -1,0 +1,28 @@
+Trabajo Práctico 4
+
+Programación de Sistemas Embebidos
+Facultad de Informática
+
+----------------------------------------------------
+
+Trabajo Práctico 4
+------------------
+
+
+Ejercicio 1- 
+
+Completar el código de la aplicación del trabajo práctico 3 utilizando interrupciones para el hardware serial del microcontrolador atmega328p.
+
+Estudiar con la hoja de datos e investigar de manera general qué interrupciones activar para el hardware UART.
+
+Utilizar la convención provista en clase para el tratamiento de buffers circulares que estén llenos.
+
+Ejercicio 2- 
+
+Realice los commits correspondientes en el proyecto remoto git compartido.
+Utilice un nuevo directorio pse_tp4, e incluya el codigo del tp3 ya resuelto con interrupciones.
+
+Completar con un Makefile adecuado.
+
+
+
