@@ -11,8 +11,6 @@
 #clean:
 #	rm *.o *.hex *.elf
 
-
-
 CC = avr-gcc
 CXX = avr-g++
 OBJCOPY = avr-objcopy
