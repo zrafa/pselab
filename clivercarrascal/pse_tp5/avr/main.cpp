@@ -23,8 +23,9 @@
 #include <string.h>
 
 
-int n=0; 	//variable del contador
-char str2[100]="Hello world!. Segundos transcurridos : ";
+int n=1; 	//variable del contador
+
+SerialPort serial(UART0, 19200L, 64, 64);
 /* Definicion de las Tareas */
 
 void led(void)
@@ -42,7 +43,7 @@ void rx232(void)
 {
 	int c;
 
-	c = serial.getchar());
+	c = serial.getchar();
 	if(c=='a')
 		PORTB |= 0x02;	//Se prende el PB1
 	if(c=='k')
@@ -56,11 +57,11 @@ void contador(void)
 
 void helloworld(void)
 {
-	char str[10]={};
-	
-	sprintf(str,"%s%u",n);
-	strcat(str2,str);
-	serial.puts(str2);
+	char str[100]="Hello world!. Segundos transcurridos : ";
+	char str2[10]={};
+	sprintf(str2,"%u",n);
+	strcat(str,str2);
+	serial.puts(str);
 	
 };
 /* FIN de la definicion Tareas */
@@ -101,6 +102,7 @@ static TaskType Tasks[N_TAREAS] {
 
 int main(void)
 {
+	
     /* Necesitamos un reloj de software para cada tarea */
     Timer  timer1;
     Timer  timer2;

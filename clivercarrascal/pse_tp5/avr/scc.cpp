@@ -147,8 +147,6 @@ SCC::rxStart(int channel)
 	if(rxQueue[channel]->isFull()!=1)
 	{
 		puerto_serial->status_control_b = puerto_serial->status_control_b | 0b10000000;	//Si el buffer no esta lleno activo interrupcion por Rx
-		//while(var==0);
-		//rxQueue[channel]->add((item)var);
 	}
 	else
 	{
@@ -160,7 +158,6 @@ ISR(USART_RX_vect)
 {
 	var=puerto_serial->data_es;
 	rxQueue[channelrx]->add((item)var);
-	//SCC::interrupt();
 }
 ISR(USART_UDRE_vect)
 {
