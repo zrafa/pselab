@@ -1,0 +1,11 @@
+*******************************************************************************************************
+MAIN
+
+se inicializa el programa y el micro envia Hello, world! luego cualquier comando ingresado en el minicom 
+se envía al micro y es restransmitido visualizandose en pantalla 
+********************************************************************************************************
+DUDAS
+
+los caracteres que se tipean en el minicom vuelven con un retraso es decir al enviar 2 caracteres devuelve el primero,
+al enviar el 3 devuelve el segundo, esto solo pasa cuando se usa puts(hello world), si se saca esta sentencia esto no sucede
+

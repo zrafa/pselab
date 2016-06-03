@@ -1,0 +1,20 @@
+tp 5 - Tareas 
+-------------------------------------------------
+
+1) para la tarea de parpadear el led rojo se hizo la tarea void red_Led(void) que enciende el led lo mantiene un tiempo hecho con el delay del pratico 1 y luego lo apaga
+para ello se definió la clase led, la cual contiene 2 punteros a los registros DDR y al Puerto correspondiente y una máscara para el led correspondiente al pin. Estos
+parámetros se cargan por el usuario en el constructor de la clase.Luego se definieron las tareas ledInit, led_ON y led_OFF que configuran el pin lo encienden y lo apagan
+respectivamente.
+Esta tarea se hace 3 veces por segundo por lo que se configuro el timer con 333 milisegundos periodico
+
+2)para la tarea 2 en la tarea void contador (void)se incrementa una variable global seg cada 1 segundo, por lo que este timer se configura con 1000ms.
+
+3)esta tarea efectúa un getchar y pregunta si es "a" o "k" el caracter recibido, si es a el led conectado al pin 9 del promini o lo que es lo mismo al pin 5 del puerto D
+se enciende y si la letra es k se apaga. Para esto se hizo uso de la clase Led creada también para la tarea 1. Esta tarea se ejecuta 2 veces por segundo por lo que se 
+incicia el timer con 500 ms.
+
+4)esta tarea ejecuta un puts cada 4 segundos con "Hola mundo!. Segundos transcurridos : n" donde n es la variable seg de la tarea 2. esta tarea se configura con 4000 ms.
+
+
+
+Todo funciona bajo interrupciones como en el práctico 4

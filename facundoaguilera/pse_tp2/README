@@ -1,0 +1,8 @@
+*************************************************
+Programa del puerto serie del avr
+*************************************************
+
+Hay que abrir Minicom y configurarlo a 9600 baudios con un bit de stop y sin bit de paridad
+
+al iniciar el programa el micro envía un start 
+

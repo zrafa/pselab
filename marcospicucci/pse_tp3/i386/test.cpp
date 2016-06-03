@@ -5,8 +5,9 @@ int main(){
 CircBuf * buf;
 
 buf =  new CircBuf(4);
+item i = '1';
 
-buf->add('1');
+buf->add(i);
 buf->add('2');
 buf->add('3');
 buf->add('4');

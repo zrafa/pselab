@@ -1,0 +1,8 @@
+*********************************************
+Programa parpadea led
+*********************************************
+al encender el micro parpadea el led, 
+
+*****************************************
+DUDAS:
+El dalay solo funciona si se pone 1000 en el argumento

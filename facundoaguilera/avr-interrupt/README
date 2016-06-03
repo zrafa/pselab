@@ -1,0 +1,11 @@
+
+*********************************************************************************************************************************
+en SCC se han creado varias funciones que permiten habilitar o deshabilitar interrupciones, borrar banderas de interrupciones habilitar o deshabilitar la transmisión.
+
+en txstart se habilita la interrupción UDRE0 por buffer vacío del micro, (o sea si hay un dato a enviar se habilita la interrupción)
+y en la interrupción se carga el dato al buffer.
+
+en rxstart de la misma manera se habilita la interrupción RXC0 por recepción completa, se borra la bandera, se lee el dato y se lo pone en la estructura 
+puerto_serial->data_es
+
+
