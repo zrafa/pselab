@@ -13,9 +13,8 @@
  * expressed or implied by its publication or distribution.
  **********************************************************************/
 
-#include "scc.cpp"
-#include "serial.h"
-
+#include <scc.h>
+#include <serial.h>
 
 static SCC  scc;
 
@@ -48,13 +47,13 @@ SerialPort::SerialPort(int            port,
         channel = -1;
         break;
     }
-	printf("LLegamos a SerialPort");
+
     //
     // Create input and output FIFO's.
     //
     pTxQueue = new CircBuf(txQueueSize);
     pRxQueue = new CircBuf(rxQueueSize);
-	
+
     // 
     // Initialize the hardware device.
     // 
@@ -103,6 +102,7 @@ SerialPort::~SerialPort(void)
  *              -1 is returned in the case of an error.
  *
  **********************************************************************/
+//Agregamos un caracter al buffer circular e iniciamos la transmision de datos mediante txStart
 int
 SerialPort::putchar(int c)
 {
@@ -120,7 +120,7 @@ SerialPort::putchar(int c)
 
     //
     // Start the transmit engine (if it's stalled).
-    //transmite el elto referenciado por head
+    //
     scc.txStart(channel);
 
     return (c);
@@ -150,6 +150,8 @@ SerialPort::puts(const char * s)
 	//
 	// Send each character of the string.
 	//
+
+	//recorremos el string hello world y agregamos cada caracter en el buffer circular rxQueue
     for (p = s; *p != '\0'; p++)
     {
         if (putchar(*p) < 0) break;

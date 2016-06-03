@@ -75,7 +75,7 @@ SCC::reset(int channel)
 void
 SCC::init(int channel, unsigned long baudRate,
                  CircBuf * pTxQueue, CircBuf * pRxQueue)
-{
+{printf("LLegamos a init");
     //
     // Copy the input and output buffer pointers.
     //
@@ -100,12 +100,11 @@ SCC::init(int channel, unsigned long baudRate,
  **********************************************************************/
 void
 SCC::txStart(int channel) //envia el item referenciado por head
-{
+{printf("Ejecutamos tsStart");
 	/* Mientras la cola no está vacía enviar el siguiente byte */
 	/* COMPLETAR */
-	CircBuf *tx=txQueue[channel];
-	if(!(*tx).isEmpty())
-		printf("%s", ((*tx).remove()) );
+	if(!(*(txQueue[channel])).isEmpty())
+		printf("%s", ((*(txQueue[channel])).remove()) );
 
 }   /* txStart() */
 
@@ -122,15 +121,15 @@ SCC::txStart(int channel) //envia el item referenciado por head
  **********************************************************************/
 void
 SCC::rxStart(int channel)
-{
+{printf("Ejecutamos rxStart");
 	/* Obtener el siguiente byte */
 	/* COMPLETAR */
-	item c=' ';
+	volatile item c=' ';
 	//while(c==0)
-	scanf("%s", &c);
+	scanf("%c", &c);
 
 	//printf("Caracter leido : %u", c);
-	(*rxQueue[channel]).add(c);
+	(rxQueue[channel])->add(c);
 	//(*txQueue[channel]).add(c);
 	//(*rxQueue[channel]).display_buffer();
 

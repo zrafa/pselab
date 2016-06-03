@@ -149,6 +149,8 @@ SerialPort::puts(const char * s)
 	//
 	// Send each character of the string.
 	//
+
+	//recorremos el string hello world y agregamos cada caracter en el buffer circular rxQueue
     for (p = s; *p != '\0'; p++)
     {
         if (putchar(*p) < 0) break;

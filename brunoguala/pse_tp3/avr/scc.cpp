@@ -80,8 +80,9 @@ SCC::init(int channel, unsigned long baudRate,
     txQueue[channel] = pTxQueue;
     rxQueue[channel] = pRxQueue;
 
-	//inicializamos el puerto serial, y los demas registros que componen a la estructura
-	uart_t *puerto_serial = (uart_t *) (0xc0);
+	//inicializamos el puerto serial, y los demas registros que componen a la estructura. NO HAY QUE USAR LA SIGUIENTE DECLRACION, uart_t *puerto_serial=(uart_t *) 	//(0xc0), porque puerto_serial pasa a ser una variable local a init. Cuando finaliza la ejecucion de init, puerto_serial deja de existir. La sentencia -I indica 
+	//que los archivos incluidos se deben buscar en el mismo directorio donde esta el archivo compilado.
+	puerto_serial = (uart_t *) (0xc0);
 
 	//Agregamos el contenido de init de serial
 
@@ -91,18 +92,21 @@ SCC::init(int channel, unsigned long baudRate,
            la estructura de datos */
 
 	/* Configurar los registros High y Low con BAUD_PRESCALE */
-	//establecemos la velocidad de transferencia de datos entre el 			   microprocesador y el periferico UART
+	//establecemos la velocidad de transferencia de datos entre el microprocesador y el periferico UART.
+	//El registro baud_rate es de 16 bits, por eso debemos configurarlo como height y low.
 	puerto_serial->baud_rate_h=(uint8_t) (BAUD_PRESCALE >> 8);
 
 	puerto_serial->baud_rate_l=(uint8_t) BAUD_PRESCALE;
+	
+	/* Activar la recepcion y transmicion */
+	//me desplazo 2 bits a la izquierda y colocamos 111 en esa posicion
+	puerto_serial->status_control_b=(uint8_t) (0x18);	
 
 	/* Configurar un frame de 8bits, con un bit de paridad y bit de stop */
 	//para configuar un frame de 8 bits debemos usar la combinacion 011, esto implica setear dos registros : status_control_c y status_control_b.
 	puerto_serial->status_control_c=(uint8_t) (0x06);
 	
-	/* Activar la recepcion y transmicion */
-	//me desplazo 2 bits a la izquierda y colocamos 111 en esa posicion
-	puerto_serial->status_control_b=(uint8_t) (0x18);
+	
 
 }   /* init() */
 
@@ -128,9 +132,9 @@ SCC::txStart(int channel)
 	//Entonces, serial utiliza un objeto scc y a partir del mismo accede a las funciones txStart y rxStart, dentro de getchar y putchar.
 	//A su vez las funciones txStart y rxStart utilizan las funciones serial_put_char y serial_get_char del practico anterior.
 	//Para que esto pueda funcionar debemos incluir la estructura uart en la definicion scc.h y la signatura de serial_put_char y serial_get_char.
-	//Testemos con el Minicom y la placa ProMini.
-	while(!(*txQueueu[channel]).isEmpty())
-		serial_put_char((*txQueueu[channel]).remove());
+	
+	while(!(txQueue[channel])->isEmpty())
+		serial_put_char( (char)(txQueue[channel]->remove()) );
 }   /* txStart() */
 
 
@@ -149,13 +153,17 @@ SCC::rxStart(int channel)
 {
 	/* Obtener el siguiente byte */
 	/* COMPLETAR */
-	(*rxQueueu[channel]).add(serial_get_char())
+
+	//agregamos en el buffer circular de recepcion el caracter ingresado por teclado o el primer caracter de la cadena hello world!
+	(*rxQueue[channel]).add(serial_get_char());
 }   /* rxStart() */
 
 //Interfaz de serial, para que este disponible en la clase scc
 
 /* enviar un byte a traves del del dispositivo inicializado */
-void serial_put_char (char outputChar)
+
+void
+SCC::serial_put_char (char outputChar)
 {
     /* Wait until the transmitter is ready for the next character. */
 
@@ -166,10 +174,9 @@ void serial_put_char (char outputChar)
     // while ( /* completar con E/S programada */ )
     //     ;
 
-	//usamos la mascara 0x20 porque debemos testear el estado del bit 5 del registro UCSRnA
-	//me desplazo 5 bits a la izquierda o coloco en esa posicion un 1
-	while(!((puerto_serial->status_control_a & (0x20))==0x20))
-		;
+	//usamos la mascara 0x20 porque debemos testear el estado del bit 5 del registro UCSRnA --- 00010000 1<<5
+	//Mientras en bit 5 no sea 1, no hacemos nada
+	while(!((puerto_serial->status_control_a & (0x20))==0x20));
 
     /* Send the character via the serial port. */
     /* (escribir el dato al registro de datos de E/S */
@@ -177,7 +184,8 @@ void serial_put_char (char outputChar)
 }
 
 
-char serial_get_char(void)
+char
+SCC::serial_get_char(void)
 {
     /* Wait for the next character to arrive. */
     /* Completar con E/S programada similar a serial_put_char pero 
@@ -186,8 +194,8 @@ char serial_get_char(void)
     // while ( /* completar con E/S programada */ )
     //     ;
 	//RXC se enncuentra en la posicion 8.
-	while(!((puerto_serial->status_control_a & (0x80))==0x80))
-		;
+	while(!((puerto_serial->status_control_a & (0x80))));
+
     // return /* DEBE devolver el valor que se encuentra en el registro de datos de E/S */
 	return puerto_serial->data_es;
 }
