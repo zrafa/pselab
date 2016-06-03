@@ -18,7 +18,7 @@
 #include <timer.h>
 #include <stdlib.h>
 #include <led.h>
-#include <serial.h>
+#include "serial.h"
 #include <stdio.h>
 
 Led led((uint8_t volatile *)0x24, (uint8_t volatile *)0x25, 0x20);
@@ -45,8 +45,9 @@ void contador(){
 void obtenerCaracter(){//PB1(OC1A)_13_D9
 
 int c;
-	//c = serial.getchar();
-	if((c == 'a')
+	c = serial.getcharr();
+		
+	if(c == 'a')
 		led2.enciende();
 	
 	if(c == 'k')
@@ -105,7 +106,7 @@ int main(void)
 
     timer1.start(333, Periodic);
     timer2.start(1000, Periodic);
-    timer3.start(1000, Periodic);
+    timer3.start(2000, Periodic);
     timer4.start(4000, Periodic);
 
     /* Asociamos cada reloj a una tarea*/

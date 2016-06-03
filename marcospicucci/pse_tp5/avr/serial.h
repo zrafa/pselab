@@ -42,7 +42,7 @@ class SerialPort
         int        putchar(int c);
         int        puts(const char * s);
 
-        int        getchar();
+        int        getcharr();
         char *     gets(char *s);
 
     private:

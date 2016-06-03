@@ -177,7 +177,7 @@ SerialPort::puts(const char * s)
  *
  **********************************************************************/
 int
-SerialPort::getchar(void)
+SerialPort::getcharr(void) //rr
 {
     int  c;
 
@@ -233,7 +233,7 @@ SerialPort::gets(char * s)
 	//
 	// Read characters until a newline is found or no more data.
 	//
-    for (p = s; (c = getchar()) != '\n' && c >= 0; p++)
+    for (p = s; (c = getcharr()) != '\n' && c >= 0; p++) //rr
     {
         *p = c;  
     }
