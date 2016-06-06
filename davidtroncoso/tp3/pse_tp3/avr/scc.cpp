@@ -1,0 +1,211 @@
+/**********************************************************************
+ *
+ * Filename:    scc.cpp
+ * 
+ * Description: Implementation of the Linux simulator SCC class.  
+ *              This class abstracts the behavior of a general serial 
+ *              communications controller (two channels).
+ *
+ * Notes:       
+ *
+ * 
+ * Copyright (c) 1998 by Michael Barr.  This software is placed into
+ * the public domain and may be used for any purpose.  However, this
+ * notice must not be changed or removed and no warranty is either
+ * expressed or implied by its publication or distribution.
+ **********************************************************************/
+#include <circbuf.h>
+
+#include <scc.h>
+
+#include <stdio.h>
+
+#include <avr/io.h>
+
+typedef struct
+{
+   	uint8_t status_control_a;	/* ucsr0a USART Control and Status A (0xc0) */
+	uint8_t status_control_b;	/* ucsr0b USART Control and Status B (0xC1) */
+	uint8_t status_control_c; 	/* ucsr0c USART Control and Status C (0xC2) */
+	uint8_t _reserved;			/* espacio sin utilizar (0xC3) */
+	uint8_t baud_rate_l;		/* ubrr0l baud rate low (0xC4)*/
+	uint8_t baud_rate_h;		/* ubrr0h baud rate high (0xC5) */
+	uint8_t data_es; 			/* udr0 i/o data (0xC6) */
+
+} volatile uart_t;
+
+uart_t *puerto_serial = (uart_t *) (0xc0);
+
+
+#define F_CPU 16000000UL
+#define USART_BAUDRATE 9600
+#define BAUD_PRESCALE (((F_CPU/(USART_BAUDRATE*16UL)))-1)
+
+#define recive_transmit_eneable 0x18
+#define paridadpar_2bitstop 0x24
+
+
+
+
+CircBuf *  txQueue[2];
+CircBuf *  rxQueue[2];
+
+
+/**********************************************************************
+ *
+ * Method:      SCC()
+ * 
+ * Description: Create a new SCC object.
+ *
+ * Notes:       
+ *
+ * Returns:     None defined.
+ *
+ **********************************************************************/
+SCC::SCC(void)
+{
+}
+
+
+/**********************************************************************
+ *
+ * Method:      reset()
+ * 
+ * Description: Reset the serial channel.
+ *
+ * Notes:       
+ *
+ * Returns:     None defined.
+ *
+ **********************************************************************/
+void
+SCC::reset(int channel)
+{
+}   /* reset() */
+
+
+/**********************************************************************
+ *
+ * Method:      init()
+ * 
+ * Description: Initialize one of the serial channels for asynchronous
+ *              communications.
+ *
+ * Notes:       Only the baud rate is selectable.  All communications
+ *              are assumed to be 8 data bits, no parity, 1 stop bit.
+ *
+ * Returns:     None defined.
+ *
+ **********************************************************************/
+void
+SCC::init(int channel, unsigned long baudRate,
+                 CircBuf * pTxQueue, CircBuf * pRxQueue)
+{
+    //
+    // Copy the input and output buffer pointers
+
+
+	puerto_serial->baud_rate_h = (unsigned char)(BAUD_PRESCALE>>8);
+	puerto_serial->baud_rate_l = (unsigned char)BAUD_PRESCALE;
+
+	puerto_serial->status_control_c |= paridadpar_2bitstop;
+	puerto_serial->status_control_b |= recive_transmit_eneable;
+
+
+
+    //
+    txQueue[channel] = pTxQueue;
+    rxQueue[channel] = pRxQueue;
+
+}   /* init() */
+
+
+/**********************************************************************
+ * 
+ * Method:      txStart()
+ *
+ * Description: Kickstart the transmit process after a previous stall.
+ *
+ * Notes:       It's okay if this gets called too often, since it will
+ *              always check the TX_READY flag before writing.  If the
+ *              TX_READY flag isn't set, nothing will be done here.
+ *
+ * Returns:     None defined.
+ *
+ **********************************************************************/
+void
+SCC::txStart(int channel)
+{
+	/* Mientras la cola no está vacía enviar el siguiente byte */
+	/* COMPLETAR */							//si no esta vacia envia por terminal en este caso, y lo quita del buffer txQueue
+	while(txQueue[channel]->isEmpty()==0){
+			while ( !(( puerto_serial->status_control_a & 0x20) == 0x20) )
+		;
+
+    /* Send the character via the serial port. */
+
+	puerto_serial->data_es = txQueue[channel]->remove(); 
+
+
+}
+
+}   /* txStart() */
+
+
+/**********************************************************************
+ * 
+ * Method:      rxStart()
+ *
+ * Description: Kickstart the receive process after a previous stall.
+ *
+ * Notes:       The caller shou
+ * Returns:     None defined.
+ *
+ **********************************************************************/
+void
+SCC::rxStart(int channel)
+{
+
+
+	
+	while ( !((puerto_serial->status_control_a & 0x80) ==0x80)) 
+		;
+
+
+	/* Get and return received data from buffer */
+	rxQueue[channel]->add(puerto_serial->data_es);
+
+	/* Obtener el siguiente byte */		
+	/* COMPLETAR 				??????*/
+	//if(txQueue[channel]->isEmpty()==0)
+	//	printf("%c\n",txQueue[channel]->remove());
+//agregaar rQueue add de el evento por teclado
+
+}   /* rxStart() */
+
+
+
+
+/**********************************************************************
+ * 
+ * Method:      Interrupt()
+ *
+ * Description: .
+ *
+ * Notes:       
+ *
+ * Returns:     .
+ *
+ **********************************************************************/
+
+//void
+//SCC::Interrupt(void){
+
+	// bajar bandera
+
+
+
+
+
+//}
+
