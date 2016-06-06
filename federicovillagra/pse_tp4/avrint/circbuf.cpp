@@ -1,32 +1,31 @@
 /**********************************************************************
  *
  * Filename:    circbuf.cpp
- *
+ * 
  * Description: An easy-to-use circular buffer class.
  *
- * Notes:
+ * Notes:       
  *
- *
+ * 
  * Copyright (c) 1998 by Michael Barr.  This software is placed into
  * the public domain and may be used for any purpose.  However, this
  * notice must not be changed or removed and no warranty is either
  * expressed or implied by its publication or distribution.
  **********************************************************************/
 
-#include <circbuf.h>
+#include "circbuf.h"
 
 /**********************************************************************
  *
  * Method:      CircBuf()
- *
+ * 
  * Description: Create a circular buffer.
  *
- * Notes:
+ * Notes:       
  *
  * Returns:     None defined.
  *
  **********************************************************************/
-
 CircBuf::CircBuf(int nItems)
 {
     size  = nItems;
@@ -37,27 +36,29 @@ CircBuf::CircBuf(int nItems)
 
 }   /* CircBuf() */
 
+
 /**********************************************************************
  *
  * Method:      ~CircBuf()
- *
+ * 
  * Description: Destroy a circular buffer.
  *
- * Notes:
+ * Notes:       
  *
  * Returns:     None defined.
  *
  **********************************************************************/
-
 CircBuf::~CircBuf(void)
- {
+{
     delete array;
- }   /* ~CircBuf() */
+
+}   /* ~CircBuf() */
+
 
 /**********************************************************************
  *
  * Method:      add()
- *
+ * 
  * Description: Add an item to the buffer.
  *
  * Notes:       It is up to the caller to check isFull() first, since
@@ -66,27 +67,27 @@ CircBuf::~CircBuf(void)
  * Returns:     None defined.
  *
  **********************************************************************/
-void CircBuf::add(item i)
- {
-  
-  if ( isFull()==0 )
-   {
+void
+CircBuf::add(item i)
+{
+	if(isFull()==0)
+	{
 		array[head]=i;
-		count=count+1;
-		if(head==size){
-			if(tail!=0)
-				head=0;
-  	 }
+		if(head==size-1)
+		head=0;
 		else
-			head++;
+		head++;
+	count++;
 	}
- }   /* add() */
+
+  
+}   /* add() */
 
 
 /**********************************************************************
  *
  * Method:      remove()
- *
+ * 
  * Description: Remove an item from the buffer.
  *
  * Notes:       It is up to the caller to check isEmpty() first, since
@@ -95,21 +96,20 @@ void CircBuf::add(item i)
  * Returns:     The removed item.
  *
  **********************************************************************/
-item CircBuf::remove(void)
+item
+CircBuf::remove(void)
 {
-
-  item aux=0;
-	if(isEmpty()==0){
-		if(tail!=head){
-			aux=array[tail];
-			count=count-1;
-			if(tail!=size)
-				tail=tail+1;
-			else
-				tail=0;
-		}
-
+	int aux=tail;
+	if(isEmpty()==0)
+	{
+		
+		if(tail==size-1)
+		tail=0;
+		else
+		tail++;
+	count--;
 	}
-	return aux;
+	return array[aux];
 
 }   /* remove() */
+

@@ -28,25 +28,24 @@ class CircBuf
 
         item  remove();
 
-        void  flush()
-         {
-           count=0;
-           head=0;
-           tail=0;
-	     	 }
-
+        void  flush() {
+		head=0;
+		tail=head;
+		count=0;
+		}
+                                                     
         int   isEmpty() {
-          if(count==0)
-       			return 1;
-       		else
-       			return 0;
+			if((head==tail)&count==0)
+				return 1;
+			else
+				return 0;
 		}
 
         int   isFull() {
-          if(count==size)
-            return 1;
-          else
-            return 0;
+			if((head==tail)&count!=0)
+				return 1;
+			else
+				return 0;
 		}
 
     private:
@@ -58,3 +57,4 @@ class CircBuf
 };
 
 #endif /* _CIRCBUF_H */
+
