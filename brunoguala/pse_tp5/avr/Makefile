@@ -3,7 +3,7 @@ CXX = avr-g++
 OBJCOPY = avr-objcopy
 
 INCLUDES = 
-SOURCES = main.o timer.o new.o
+SOURCES = main.o timer.o new.o serial.o scc.o circbuf.o led.o
 
 MMCU = atmega328p
 CPU_CLK = 16000000UL

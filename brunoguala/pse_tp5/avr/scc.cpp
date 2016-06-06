@@ -138,9 +138,9 @@ SCC::txStart(int channel)
 	//A su vez las funciones txStart y rxStart utilizan las funciones serial_put_char y serial_get_char del practico anterior.
 	//Para que esto pueda funcionar debemos incluir la estructura uart en la definicion scc.h y la signatura de serial_put_char y serial_get_char.
 	
-	while(!(txQueue[channel])->isEmpty())
+	while(!(txQueue[channel])->isEmpty()){
 		activar_tx();
-
+	}
 }   /* txStart() */
 
 
@@ -178,7 +178,7 @@ void
 SCC::activar_tx(){
 
 //Activamos el bit 5 del registro status_control_b (UCSR0b) para interrupciones de transmision mediante buffer vacio
-//Utilizamos la mascara 0x20, 0010 0000, (1 << 5).
+//Utilizamos la mascara 0x20, 0010 0000 o (1 << 5).
 //Al mismo tiempo mantenemos parte del estado anterior del registro.
 puerto_serial->status_control_b |= UDRIEn;
 
@@ -237,10 +237,11 @@ puerto_serial->status_control_b |= RXCIEn;
  **********************************************************************/
 ISR(USART_UDRE_vect){
 
-*udr=(char)(txQueue[canal]->remove());
-
-//El momento apropiado para desactivar las interrupciones de recepcion es cuando el registro de datos que configurado con algun valor.
+//El momento apropiado para desactivar las interrupciones de recepcion es cuando el registro de datos queda configurado con algun valor. Desactivamos interrupciones de
+//transmision para evitar que el sistema embebido guarde algun caracter en el registro de datos.
 desactivar_tx();
+
+*udr=(char)(txQueue[canal]->remove());
 
 }
 

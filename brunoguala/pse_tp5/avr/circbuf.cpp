@@ -71,7 +71,8 @@ void
 CircBuf::add(item i) //considero que tail apunta al ultimo elto del buffer circular
 {
 
-	if(isEmpty()){  //ahora, el buffer tiene 1 elto.
+	if(isEmpty()){  
+			//Agregamos al buffer 1 elto en la posicion cero.
 			array[0]=i;
 			count++;
 			head=0;
@@ -79,31 +80,24 @@ CircBuf::add(item i) //considero que tail apunta al ultimo elto del buffer circu
 	}
 	else{
 			if(isFull()){
-				; //quitamos el mensaje de error porque en el microcontrolador no podemos usar librerias de c 
+				; //Quitamos el mensaje de error porque en el microcontrolador no podemos usar librerias de C.
 			}
-			else{ //en esta rama sabemos que hay lugar en el buffer
+			else{ //En esta rama sabemos que hay lugar en el buffer. Ese lugar puede estar en cualquier parte del buffer, al pricipio o al final.
+			    //Si el tail apunta al ultimo elto. del buffer circular, en la siguiente posicion se puede escribir, pero hay que verificar si no nos salimos de rango.
 				tail++;
-				if(tail==(size-1)){	//la ultima posicion del buffer puede estar disponible u ocupada
-					
-					//if(!isFull()){ //si tail esta en la ultima posicion del buffer y hay lugar en el mismo debemos llevar a tail a posicion cero, y escribir en ese lugar un item
-						//tail=0;
-					//}
-			
+				if(tail==(size-1)){	
+								
 					array[tail]=i;
 					count++;						
-
-					//si existe head desplazado, debemos cambiar la posicion del tail a 0. Caso contrario tail debe quedar en la misma posicion porque el buffer 
-					//esta completo
-					//if(head > 0){
-						//tail=0;
-					//}
 						
 				}
 				else{ 
-					if(tail>(size-1)){
+					if(tail>(size-1)){ //Si se cumple esta condicion estamos fuera de rango, debemos resetear el tail a la posicion 0. La posicion cero se encuentra
+									   //disponible porque ya pasamos la condicion isFull().
 						tail=0;
-					} //si tail no esta en la ultima posicion del buffer y hay lugar en el mismo debemos escribir item en la posicion donde se encuentra el tail
-					
+					} 
+					//Si tail no esta en la ultima posicion del buffer y hay lugar, escribimos item en la posicion donde se encuentra el tail.
+					//Sabemos que hay lugar porque ya pasamos la condicion isFull().
 					array[tail]=i;
 					count++;
 					
@@ -170,7 +164,9 @@ CircBuf::remove(void)
 	
 	count--;	
 	
-	if(head==tail && (tail==(size-1))){
+	//Como el count se decrementa en el paso anterior es posible preguntar si el buffer esta vacio para resetear los atributos head, tail y count. Esto sirve 
+	//cuando agregamos un elto al buffer y despues lo eliminamos, en este caso el head queda en una posicion que no es la cero. 
+	if(isEmpty()){ //(head==tail && (tail==(size-1)))
 		head=0;
 		tail=0;
 		count=0;
