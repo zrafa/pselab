@@ -16,6 +16,7 @@
 #include "scc.cpp"
 #include "serial.h"
 
+
 static SCC  scc;
 
 /**********************************************************************
@@ -47,13 +48,13 @@ SerialPort::SerialPort(int            port,
         channel = -1;
         break;
     }
-
+	printf("LLegamos a SerialPort");
     //
     // Create input and output FIFO's.
     //
     pTxQueue = new CircBuf(txQueueSize);
     pRxQueue = new CircBuf(rxQueueSize);
-
+	
     // 
     // Initialize the hardware device.
     // 

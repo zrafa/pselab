@@ -68,7 +68,7 @@ CircBuf::~CircBuf(void)
  **********************************************************************/
 void CircBuf::add(item i)
  {
-  
+
   if ( isFull()==0 )
    {
 		array[head]=i;

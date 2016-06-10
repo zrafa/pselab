@@ -1,0 +1,58 @@
+Programacion de Sistemas Embebidos
+Trabajo Práctico 5
+-----------------------------------------------
+
+Ejercicio 1:
+------------
+
+Estudiar la implementación de los relojes por software mantenidos por
+el tick de un timer de hardware con interrupciones. 
+Esa sección de código es muy util en otros contextos embebidos, y utiliza
+una estructura de datos de lista enlazada para mantener todos los relojes.
+Experimente con la implementación i386 para realizar pruebas y trazas 
+del código.
+
+Ejercicio 2:
+------------
+
+Desarrolle, para la version avr, una aplicacion mas completa, que comprenda
+cuatro tareas :
+
+1- Una tarea que parpadea el led rojo tres veces por segundo.
+
+2- Una tarea contador que se ejecuta cada un segundo. Debe mantener
+  la cantidad segundos transcurridos desde que se ejecutó la aplicación.
+
+3- Una tarea que lee un dato  (getchar) desde el driver serial dos veces 
+   por segundo.
+
+  NOTA: la implementacion con interrupciones de scc se mantiene.
+  La tarea simplemente solicita un dato al driver serial (no a scc). 
+  Si el driver serial encuentra que en el buffer de recepcion hay datos 
+  entonces le retorna a la tarea el siguiente caracter.
+
+  Si el caracter recibido es la letra 'a' se enciende un led conectado
+  al pcb del arduino pro mini en el pin 9.
+
+  Si el caracter recibido es la letra 'k' se apaga el led conectado
+  al pcb del arduino pro mini en el pin 9.
+
+4- Una tarea que se ejecuta cada cuatro segundos. Envia por la conexion 
+  serial el mensaje: 
+  "Hola mundo!. Segundos transcurridos : n"
+  (donde n es la cantidad de segundos transcurridos desde que se ejecutó
+   la aplicación, y que es mantenido por la tarea 2).
+
+Notas Generales:
+  - Para el driver serial reutilice todo el codigo ya desarrollado en el 
+    práctico 4. Por lo que debe incorporar los archivos fuentes serial*, scc*
+    y circbuf*.
+
+  - Para el control de los leds podría incorporar código de los primeros
+    prácticos. Los módulos para este caso podrían llamarse led* o gpio*. 
+    Coloque un nombre adecuado.
+
+  - Para la comunicación entre tareas (por ejemplo entre la tarea
+    que mantiene el control de los segundos y la que envía por el serial)
+    puede utilizar una variable global. Como las tareas no son interrumpidas
+    para ser intercambiadas entonces no existe problema de secciones críticas.

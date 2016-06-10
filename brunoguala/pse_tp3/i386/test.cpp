@@ -14,6 +14,7 @@ int main (){
 	item i=' ';
 	item l=' ';
 	CircBuf *buffer_circular=NULL;
+	 int k=0;
 	
 	while(fin){
 
@@ -35,9 +36,9 @@ int main (){
 					 printf("\nIngrese un caracter \n");
 					 //while(i == ' ')
 					 scanf("%s", &i);
-					 //i=getchar();
+					 //gets(&i); deprecada
 					 printf("Caracter Ingresado : %c", i);
-					 (*buffer_circular).add((unsigned char)i);
+					 (buffer_circular)->add(i);
 					 break;
 					}
 
@@ -94,25 +95,29 @@ int main (){
 					}
 
 			case 7 :{
-					 printf("\nIngrese la longitud de ambos bufers circulares\n");
-					 int n, m;
-					 scanf("%d", &n);
-					 scanf("%d", &m);
+					 printf("\nIngrese la longitud de ambos buffers circulares\n");
+					// printf("k : %u ", *k); 
+					 scanf("%d",&k);
+					 //n=getchar();
+					 //m=getchar();
+					 //printf("%u", k);
+					 //scanf("%u", &n);
 					 
-					 SerialPort *serial=new SerialPort(0, 9600, n, m);
+					 //SerialPort *serial=new SerialPort(0, 9600L, k, k);
+					 printf("Pasamos la definicion del serial");
 					 item c=' ';
 					 while(1){
-
-						c=(*serial).getchar();
-						
-						(*serial).putchar(c);
+						printf("LLegamos hasta getchar");
+						//c=(*serial).getchar(); //usamos flecha con puntero
+						printf("%s", c);
+							//(*serial).putchar(c); //llama a 
 						
 												
-					 }
+					 }//sex code, max va cua-ro. Psicologia.El camino del guerrero pacifico. Ligar es facil si sabes como.
 					 
 					}
 
-			default : printf("\n  Opcion incorrecta ");
+			default : printf("\n  Opcion Incorrecta ");
 					  break;
 
 		}

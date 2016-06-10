@@ -12,11 +12,18 @@
  * notice must not be changed or removed and no warranty is either
  * expressed or implied by its publication or distribution.
  **********************************************************************/
+#include <avr/io.h>
+#include "stdint.h"
 
 #ifndef _SCC_H
 #define _SCC_H
 
-#include <circbuf.h>
+#include "circbuf.h"
+
+//constantes para establecer la velocidad de transferencia de datos entre el microcontrolador y el periferico
+#define USART_BAUDRATE 9600
+#define F_CPU 16000000UL
+#define BAUD_PRESCALE (((F_CPU/(USART_BAUDRATE*16UL)))-1)
 
 //estructura completa del uart para avr
 typedef struct
@@ -34,7 +41,7 @@ typedef struct
 
     uint8_t data_es;    /* udr0 i/o data */
 
-} volatile uart_t;
+} volatile uart_t; //es el nombre de una estructura
 
 /* puntero a la estructura de los registros del periferico */
 
@@ -50,7 +57,7 @@ class SCC
         void  txStart(int channel);
         void  rxStart(int channel);
 		char serial_get_char();
-		void serial_put_char()
+		void serial_put_char(char c);
 
     private:    
 			uart_t *puerto_serial; //para poder usar el serial en scc

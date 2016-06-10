@@ -1,0 +1,12 @@
+#include<circbuf.h>
+#include<circbuf.cpp>
+
+main()
+{
+	CircBuf ma=new CircBuf(5);
+	ma.add(1);
+	ma.add(2);
+	ma.add(3);
+ma.remove();
+printf(ma.remove());
+}
