@@ -12,6 +12,7 @@ SOURCES =	../FreeRTOS/Source/list.o \
 			../FreeRTOS/Source/portable/GCC/ATMega1284p/port.o \
 			led.o \
 			motor.o \
+			GPIO.o \
 			$(MAIN).o
 
 MMCU = atmega1284p

@@ -3,6 +3,7 @@
 #include <avr/io.h>
 #include "motor.h"
 #include "led.h"
+#include "GPIO.h"
 #include <avr/interrupt.h>
 
 //#define prioridadUS (tskIDLE_PRIORITY) + 4
@@ -15,7 +16,9 @@ static void taskSM(void *pvParameters);
 //static void taskUS(void *pvParameters);
 //static void taskCR(void *pvParameters);
 
-Led led((uint8_t volatile *)0x21, (uint8_t volatile *)0x22, 0x80);
+//Led led((uint8_t volatile *)0x21, (uint8_t volatile *)0x22, 0x80);
+Led led((volatile uint8_t *) 0x24,(volatile uint8_t *) 0x25, 0x80);		//Led amarillo en RB7			//Esto seria lo mismo que la linea de arriba (en teoria. Hay que verificarlo)
+GPIO bicolor((volatile uint8_t *) 0x21,(volatile uint8_t *) 0x22, 7);	//Led bicolor en RA7
 //Led led2((uint8_t volatile *)0x24, (uint8_t volatile *)0x25, 0x2);
 
 volatile uint8_t *eicra;
@@ -42,23 +45,29 @@ Motor motores;//parentesis??()
 		
 		if(izquierda == 1){
 			cli();
+			bicolor.direccion(1);	//pin como salida
+			bicolor.estado(0);		//enciende el rojo
 			motores.M_izquierda(0xFFFF);		
 			vTaskDelay(350);
 			led.apaga();
+			bicolor.direccion(0);	//se pone otra vez como entrada para apagar los dos
 			motores.M_izquierda(0);
 			izquierda = 0;
-			vTaskDelay(2000);
+			vTaskDelay(2000);			
 			sei();
 			
 		}
 		if(derecha == 1){
 			cli();
+			bicolor.direccion(1);	//pin como salida
+			bicolor.estado(1);		//enciende el verde
 			motores.M_derecha(0xFFFF);
 			vTaskDelay(350);
 			led.apaga();
+			bicolor.direccion(0);	//se pone otra vez como entrada para apagar los dos
 			motores.M_derecha(0);
 			derecha = 0;
-			vTaskDelay(2000);
+			vTaskDelay(2000);			
 			sei();
 		}
 	/*	if(){
