@@ -1,5 +1,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
 #include <avr/io.h>
 #include "motor.h"
 #include "led.h"
@@ -24,7 +25,9 @@ GPIO bicolor((volatile uint8_t *) 0x21,(volatile uint8_t *) 0x22, 7);	//Led bico
 volatile uint8_t *eicra;
 volatile uint8_t *eimsk;
 
-int izquierda = 0, derecha = 0, proximidad = 0, ctr_rmt = 0; 
+int izquierda = 1, derecha = 2, proximidad = 3, ctr_rmt = 4; //sacar
+
+xQueueHandle handleCola;	// !!!!!!!!!!!!!!!!!!!!!!!
 
 //***********************Definicion de Tareas***************************
 void taskSM(void *pvParameters){//sube bandera izq, bandera der .. en las isr
@@ -40,10 +43,12 @@ void taskSM(void *pvParameters){//sube bandera izq, bandera der .. en las isr
 //}
 void taskMTR(void *pvParameters){ //ifs para ver banderas y mover motores
 Motor motores;//parentesis??()
+int mover = -1;
 	
 	for(;;){
+		xQueueReceive(handleCola, (void *)&mover, (portTickType)0);//dentro del for?
 		
-		if(izquierda == 1){
+		if(mover == 1){
 			cli();
 			bicolor.direccion(1);	//pin como salida
 			bicolor.estado(0);		//enciende el rojo
@@ -52,12 +57,12 @@ Motor motores;//parentesis??()
 			led.apaga();
 			bicolor.direccion(0);	//se pone otra vez como entrada para apagar los dos
 			motores.M_izquierda(0);
-			izquierda = 0;
+			mover = -1;
 			vTaskDelay(2000);			
 			sei();
 			
 		}
-		if(derecha == 1){
+		if(mover == 2){
 			cli();
 			bicolor.direccion(1);	//pin como salida
 			bicolor.estado(1);		//enciende el verde
@@ -66,7 +71,7 @@ Motor motores;//parentesis??()
 			led.apaga();
 			bicolor.direccion(0);	//se pone otra vez como entrada para apagar los dos
 			motores.M_derecha(0);
-			derecha = 0;
+			mover = -1;
 			vTaskDelay(2000);			
 			sei();
 		}
@@ -81,7 +86,13 @@ Motor motores;//parentesis??()
 //********************************************************************** 
 int main(void){
 
+
+
+
 xTaskHandle handleSM, handleUS, handleCR, handleMTR; //ni uso los handles. por ahora
+				
+
+handleCola =  xQueueCreate(1,sizeof(int)); //tamaño de la cola 1. Guarda enteros #1 para mover izq, #2 para mover der.
 
 xTaskCreate(taskMTR, (const char*)"TareaMTR", configMINIMAL_STACK_SIZE, NULL, prioridadMTR, &handleMTR);
 xTaskCreate(taskSM, (const char*)"TareaSM", configMINIMAL_STACK_SIZE, NULL, prioridadSM, &handleSM);
@@ -102,12 +113,28 @@ return 1;
 
 
 ISR(INT0_vect){//isr para interrupcion por int0	
-	izquierda = 1;
+	signed portBASE_TYPE xTaskWokenByPost;
+	xTaskWokenByPost = pdFALSE;
+	int a = 1;	
+	
+	xTaskWokenByPost = xQueueSendFromISR(handleCola, &a, &xTaskWokenByPost);
 	led.enciende();
+	
+	if(xTaskWokenByPost)
+		taskYIELD();	//fuerza el cambio de contexto
+	
 }
 
 ISR(INT1_vect){//isr para interrupcion por int1
-	derecha = 1;
+	signed portBASE_TYPE xTaskWokenByPost;
+	xTaskWokenByPost = pdFALSE;
+	int b = 2;	
+	
+	xTaskWokenByPost = xQueueSendFromISR(handleCola, &b, &xTaskWokenByPost);
 	led.enciende();
+	
+	if(xTaskWokenByPost)
+		taskYIELD();	//fuerza el cambio de contexto
+	
 }
 

@@ -22,7 +22,7 @@ HFLAGS = -O ihex -R .eeprom
 
 MAIN = mainBeta
 
-all: $(SOURCES) link hex
+all: $(SOURCES) link hex hid
 
 clean:
 	-rm *.o *.hex $(MAIN) \
@@ -45,6 +45,7 @@ hex:
 flash:
 	avrdude -F -V -c arduino -p ATMEGA1284P -P $(TTY) -b 115200 -U flash:w:$(MAIN)
 	
-
+hid:
+	hiduploader -mmcu=atmega1284p -v -usb=0x2842,0x0001 $(MAIN).hex
 
 
