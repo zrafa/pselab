@@ -12,6 +12,7 @@ accel=(acelerometro *) INIT_ACCEL;
 sensor_temp=(sensor_temperatura *) INIT_TEMP;
 
 sensor_magnetico=(magnetometro *) INIT_MG;
+sensor_magnetico->hzh= (uint8_t) 0x88;
 
 }
 

@@ -24,10 +24,10 @@ void
 SPI::SPI_MasterInit (void){
 
 /* Set MOSI, SCK and CS or ~SS and CE as output, all others input */
-*(pSPI_struct->DDR_SPI) |= (MOSI | SCK | CS | CE); 
+*(pSPI_struct->DDR_SPI) |= (MOSI | SCK | CS ); //| CE 
 
 /* Enable SPI, Master, set clock rate fck/16 */
-(registros_spi->control_register) |= (SPE |MSTR |SPR0);
+*(registros_spi->control_register) |= (SPE |MSTR |SPR0);
 
 }
 
@@ -35,9 +35,9 @@ void
 SPI::SPI_MasterTransmit(uint8_t data){
 
 /* Start transmission */
-(registros_spi->data_register) = data;
+*(registros_spi->data_register) = data;
 /* Wait for transmission complete */
-while(!((registros_spi->status_register) & SPIF))
+while(!(*(registros_spi->status_register) & SPIF))
 	;
 
 }
@@ -94,7 +94,7 @@ SPI::SPI_SlaveInit(void){
 /* Set MISO output, all others input */
 *(pSPI_struct->DDR_SPI) = MISO;
 /* Enable SPI */
-(registros_spi->control_register) = SPE;
+*(registros_spi->control_register) = SPE;
 
 }
 
@@ -103,11 +103,17 @@ uint8_t
 SPI::SPI_SlaveReceive(void){
 
 /* Wait for reception complete */
-while(!((registros_spi->status_register) & SPIF))
+while(!(*(registros_spi->status_register) & SPIF))
 	;
 
 /* Return Data Register */
-return (registros_spi->data_register);
+return *(registros_spi->data_register);
+
+}
+
+void
+SPI::MasterImuReceive(uint8_t x){
+
 
 }
 

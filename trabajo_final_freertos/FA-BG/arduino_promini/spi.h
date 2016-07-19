@@ -33,9 +33,9 @@ uint8_t sck;
 
 typedef struct {
 
-uint8_t control_register; //SPCR 0x4C
-uint8_t status_register; //SPSR 0x4D
-uint8_t data_register; //SPDR 0x4E
+uint8_t *control_register; //SPCR 0x4C
+uint8_t *status_register; //SPSR 0x4D
+uint8_t *data_register; //SPDR 0x4E
 
 } SPI_control;  //Tipo de datos para los registros de control.
 
@@ -65,6 +65,7 @@ class SPI {
 			  //void SPI_SlaveTransmit(unsigned char Data);
 			  //void SPI_SlaveTransmit(const uint8_t* buf, uint8_t len);
 			  uint8_t SPI_SlaveReceive(void);
+			  void MasterImuReceive(uint8_t x);
 			  
 	private :
 			  //Registros del PORTB asociados al SPI.

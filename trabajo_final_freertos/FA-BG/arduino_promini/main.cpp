@@ -12,7 +12,7 @@ MPU9250 imu;
 //nRF24L01 transceptor;
 
 Led led_rojo((volatile unsigned char *) DDRB, (volatile unsigned char *) PORTB, ENCENDER);
-SerialPort serial(0, 9600, 50, 50);
+SerialPort serial(0, 9600, 120, 120);
 
 //void leer_caracter (void *pvParameters);
 void mostrar_medicion_imu ();
@@ -21,12 +21,13 @@ void delay(int milisegundos);
 int main (){
 
 spi.SPI_MasterInit();
-//serial.putchar('H');
+serial.puts("Hola");
+
 while (1){
-//serial.puts("Hola");
+
 //delay(1000);
 mostrar_medicion_imu();
-//delay(1000);
+delay(7000);
 /*led_rojo.encender();
 led_rojo.delay(1000);
 led_rojo.apagar();
@@ -61,15 +62,25 @@ void mostrar_medicion_imu (){
 
 //Si pin IRQ esta en low => esperar.
 spi.cs(LOW);
-// Obtenemos la medicion realizada por la imu.
-spi.SPI_MasterTransmit((imu.get_sensor_magnetico())->hzh);
+uint8_t read_h = ((imu.get_sensor_magnetico())->hzh) ;
 
-//uint8_t medicion=spi.SPI_SlaveReceive();
+// Obtenemos la medicion realizada por la imu.
+spi.SPI_MasterTransmit(read_h);
+//uint8_t *read = (uint8_t *)0x88;
+uint8_t read = 0x88;
+//uint8_t medicion_h=spi.SPI_SlaveReceive();
+uint8_t medicion_h = 12;
+//uint8_t read_l = ((imu.get_sensor_magnetico())->hzl) | 0x80;
+//spi.SPI_MasterTransmit(read_l);
+
+//uint8_t medicion_l=spi.SPI_SlaveReceive();
+
+spi.cs(HIGH);
 //int medicion=10;
-//char mensaje[100];
-//sprintf(mensaje, "Esta es la medicion del sensor magnetico : %d ", medicion);
+char mensaje[100];
+sprintf(mensaje, "Esta es la medicion del sensor magnetico : %x ", read_h);
 //Enviamos el contenido de mensaje al registro de datos.
-//serial.puts("Hola");
+serial.puts(mensaje);
 
 led_rojo.encender();
 
