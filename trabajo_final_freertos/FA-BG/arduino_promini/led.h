@@ -6,7 +6,8 @@
 //Mascaras para encender el led rojo de la placa arduino promini.
 #define DDRB           0x24       //Direccion de memoria del registro de direcciones. Se usa habilitar un pin para salida.
 #define PORTB          0x25       //Direccion de memoria del registro de estado. Este registro se usa para encender/apagar un led.
-#define ENCENDER       0x20       //Mascara para encender/apagar el led rojo del arduino pro-mini.
+#define ENCENDER       (1 << 2)       //Mascara para encender/apagar el led rojo del arduino pro-mini.
+//Si especificamos (1 << 2) estamos gestionando el pin CS, lo ponemos en LOW y HIGH.
 
 //Mascaras para encender el led amarillo de la placa duino-bot.
 #define ENCENDER_DB    0x80

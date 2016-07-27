@@ -29,25 +29,25 @@ uint8_t mosi;
 uint8_t miso;
 uint8_t sck;
 
-} SPI_pines;  //Tipo de dato para los pines.
+}  SPI_pines;  //Tipo de dato para los pines.
 
 typedef struct {
 
-uint8_t *control_register; //SPCR 0x4C
-uint8_t *status_register; //SPSR 0x4D
-uint8_t *data_register; //SPDR 0x4E
+uint8_t  control_register; //SPCR 0x4C
+uint8_t  status_register; //SPSR 0x4D
+uint8_t  data_register; //SPDR 0x4E
 
 } SPI_control;  //Tipo de datos para los registros de control.
 
 //Registros asociados a SPI, donde estan mapeados los pines MOSI, MISO, SCK etc.
-typedef struct{
+typedef struct {
 
 //SPI_pines pines; 			//pines del SPI
-uint8_t * DDR_SPI;			//dirección de configuración de pines del SPI, 0x24
-uint8_t * pSPI_port;  		//puerto del SPI,   0x25
+uint8_t  ddr_spi;			//dirección de configuración de pines del SPI, 0x24
+uint8_t  SPI_port;  		//puerto del SPI,   0x25
 //SPI_Control * pSPI_Control; //Registros de control del SPI.
 
-} SPI_struct;  
+}  SPI_struct;  
 
 class SPI {
 
@@ -56,7 +56,7 @@ class SPI {
 			  SPI();
 
 			  void SPI_MasterInit (void);
-			  void SPI_MasterTransmit(uint8_t Data);
+			  void SPI_MasterTransmit(uint8_t data);
 			  //void SPI_MasterTransmit(const uint8_t* buf, uint8_t len);
 			  //uint8_t SPI_MasterRead(void);
 			  void cs (int chipselect);
@@ -66,6 +66,8 @@ class SPI {
 			  //void SPI_SlaveTransmit(const uint8_t* buf, uint8_t len);
 			  uint8_t SPI_SlaveReceive(void);
 			  void MasterImuReceive(uint8_t x);
+			  SPI_control *get_registros_spi();
+			  SPI_struct  *get_pspi();
 			  
 	private :
 			  //Registros del PORTB asociados al SPI.
@@ -74,7 +76,7 @@ class SPI {
 			  //Registros para configurar SPI.
 			  SPI_control *registros_spi; 
 
-			  SPI_pines *pines; 
+			  SPI_pines pines; 
 
 };
 

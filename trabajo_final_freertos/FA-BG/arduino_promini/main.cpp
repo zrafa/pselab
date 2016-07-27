@@ -27,7 +27,7 @@ while (1){
 
 //delay(1000);
 mostrar_medicion_imu();
-delay(7000);
+delay(9000);
 /*led_rojo.encender();
 led_rojo.delay(1000);
 led_rojo.apagar();
@@ -60,30 +60,34 @@ case 105 : //Inicializamos el tr en modo PTX.
 
 void mostrar_medicion_imu (){
 
-//Si pin IRQ esta en low => esperar.
-spi.cs(LOW);
-uint8_t read_h = ((imu.get_sensor_magnetico())->hzh) ;
-
-// Obtenemos la medicion realizada por la imu.
-spi.SPI_MasterTransmit(read_h);
+spi.cs(0);
+//uint8_t read_h = ((imu.get_sensor_magnetico())->hzh) ;
+//delay(9000);
+volatile uint8_t cr= ((spi.get_registros_spi())->control_register);
 //uint8_t *read = (uint8_t *)0x88;
-uint8_t read = 0x88;
+uint8_t x=(spi.get_pspi())->ddr_spi;
+// Obtenemos la medicion realizada por la imu.
+//spi.SPI_MasterTransmit(read_h);
+//uint8_t *read = (uint8_t *)0x88;
+
 //uint8_t medicion_h=spi.SPI_SlaveReceive();
-uint8_t medicion_h = 12;
+//uint8_t medicion_h = 12;
 //uint8_t read_l = ((imu.get_sensor_magnetico())->hzl) | 0x80;
-//spi.SPI_MasterTransmit(read_l);
+spi.SPI_MasterTransmit(0x0A);
 
 //uint8_t medicion_l=spi.SPI_SlaveReceive();
 
-spi.cs(HIGH);
+spi.cs(1);
 //int medicion=10;
-char mensaje[100];
-sprintf(mensaje, "Esta es la medicion del sensor magnetico : %x ", read_h);
+char mensaje[100], men[100];
+sprintf(mensaje, "Este es el contenido del registro ddr_spi %x ", x);
 //Enviamos el contenido de mensaje al registro de datos.
 serial.puts(mensaje);
-
-led_rojo.encender();
-
+sprintf(men, "Este es el contenido de SPCR : %x", cr);
+serial.puts(men);
+/*led_rojo.encender();
+led_rojo.delay(1000);
+led_rojo.apagar();*/
 }
 
 void delay (int milisegundos){

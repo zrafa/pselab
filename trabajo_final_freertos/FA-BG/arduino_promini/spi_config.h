@@ -1,8 +1,8 @@
 
-#ifndef _CONF_H
-#define _CONF_H
+//#ifndef _CONF_H
+//#define _CONF_H
 
-/* Pines de SPI para placa Arduino Pro-mini atmega328p */
+/* Pines de SPI para placa Arduino Pro-mini atmega328p */ 
 #define CE         (1<<1)  //PB1
 #define CS         (1<<2)  //PB2
 #define MOSI       (1<<3)  //PB3
@@ -22,7 +22,7 @@
 
 
 /* SPI Control Register */
-#define SPCR   0x4C //– SPI Control Register 
+#define SPCR_   0x4C //– SPI Control Register 
 #define SPIE  (1<<7)// SPI Interrupt Enable
 #define SPE   (1<<6)// – SPE: SPI Enable
 #define DORD  (1<<5)// – DORD: Data Order
@@ -44,4 +44,4 @@
 /* SPI Data Register */
 #define SPDR    0x4E // SPI Data Register
 
-#endif
+//#endif
