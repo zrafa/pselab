@@ -34,20 +34,20 @@ Motor::Motor()// Rutina de inicialización control de motores (CONSTRUCTOR)
 void
 Motor::M_adelante(unsigned int pwm)
 {
-		PORTB &= ~(1 << MOTA2);	// Direccion motor A:	IN1 = 0
-		PORTB |= (1 << MOTA1);	// 						IN2 = 1 
+		PORTB &= ~(1 << MOTA1);	// Direccion motor A:	IN1 = 0
+		PORTB |= (1 << MOTA2);	// 						IN2 = 1 ???
 		OCR1A = pwm;			// Velocidad motor A
 	
 		PORTB &= ~(1 << MOTB1);	// Direccion motor B:	IN3 = 0
-		PORTB |=  (1 << MOTB2);	// 						IN4 = 1
+		PORTB |=  (1 << MOTB2);// 						IN4 = 1
 		OCR1B = pwm;			// Velocidad motor B	
 }
  
 void
 Motor::M_atras(unsigned int pwm)
 {
-		PORTB |= (1 << MOTA2);	// Direccion motor B:	IN1 = 1
-		PORTB &= ~(1 << MOTA1);	// 						IN2 = 0
+		PORTB |= (1 << MOTA1);// Direccion motor B:	IN1 = 1
+		PORTB &= ~(1 << MOTA2);	// 						IN2 = 0
 		OCR1A = pwm;			// Velocidad motor A
 	
 		PORTB |=  (1 << MOTB1);	// Direccion motor B:	IN3 = 1

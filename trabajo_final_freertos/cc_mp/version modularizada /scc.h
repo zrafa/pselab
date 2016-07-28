@@ -56,8 +56,11 @@ class SCC
         void  txStart(int channel);;
         void  rxStart(int channel);
 
-		//void serial_put_char (char outputChar);
-		//char serial_get_char(void);
+		void desactivarUART();
+		void activarUART();
+		
+		void serial_put_char (char outputChar);
+		char serial_get_char(void);
 		
 		//static void interrupt  Interrupt(void);//publico o privado?
 	private:

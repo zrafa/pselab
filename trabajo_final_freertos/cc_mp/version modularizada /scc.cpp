@@ -93,7 +93,7 @@ SCC::init(int channel, unsigned long baudRate,
 	puerto_serial->baud_rate_l = (((F_CPU/(baudRate*16UL)))-1);
 	puerto_serial->baud_rate_h = (((F_CPU/(baudRate*16UL)))-1)>>8;
 	puerto_serial->status_control_b = 0b00011000;
-	sei();
+	//sei();
 }   /* init() */
 
 /**********************************************************************
@@ -137,11 +137,11 @@ SCC::txStart(int channel)
 void
 SCC::rxStart(int channel)
 {
-		puerto_serial->status_control_b = (puerto_serial->status_control_b) | RX_INT;//activo
-			
-//desactivo??
-}
+		if(rxQueue[channel]->isFull() != 1){  
+			rxQueue[channel]->add((item)serial_get_char());
+		}
 
+}
 // *********************************************************************
 /*void
 SCC::serial_put_char (char outputChar)
@@ -160,14 +160,54 @@ SCC::serial_get_char(void)
 
 // *********************************************************************
 //USART_UDRE_vect        USART Data Register Empty????
-ISR(USART_RX_vect){	
-	rxQueue[chan]->add(*dato);
+//ISR(USART_RX_vect){	
+	//rxQueue[chan]->add(*dato);
+//}
+
+//ISR(USART_UDRE_vect){
+	//if(txQueue[chan]->isEmpty() != 1){
+	//*dato = (txQueue[chan]->remove());
+	//}
+//}
+void
+SCC::serial_put_char (char outputChar)
+{    
+	
+    while(((puerto_serial->status_control_a) & UDREn) == 0){	
+		//el buffer de transmision solo puede escribirse cuando el bit 5 (udren) del s_c_a esta en 1, que indica buffer vacio y listo para ser escrito   	
+    }  
+    // no salia nunca del while con ~ adelante y sin el ==0 ..
+     
+    
+    puerto_serial->data_es = outputChar; // envio dato por puerto serial (lo escribo en el reg de datos de e/s)
+  
+    while(((puerto_serial->status_control_a) & TXCn) == 0){ //bit 6 (txcn) del s_c_a esta en 1 cuando el frame del transmit shift register se "shifteo" y no hay datos nuevos actualmente en el buffer de transmision (udrn)
+	}	
+	/*inicializaLed();
+	cambiaLed(); llega aca(transmitio??), prende el led.. */
 }
 
-ISR(USART_UDRE_vect){
-	if(txQueue[chan]->isEmpty() != 1){
-	*dato = (txQueue[chan]->remove());
-	}
+char
+SCC::serial_get_char(void)
+{
+	//inicializaLed();
+	//cambiaLed();
+	while(((puerto_serial->status_control_a) & RXCn) == 0){// bit 7 en 0 si buffer d recepcion vacio, ie, no tiene ningun dato que no haya sido leido)	
+	
+	}// en 1 si hay datos sin leer en el buf de recep (llegó)
+
+   
+   return puerto_serial->data_es;
+}
+//**********************************************************************
+void
+SCC::desactivarUART(void){
+	puerto_serial = (uart_t *) (0xc0);
+puerto_serial->status_control_b = 0b00000000;
 }
 
-
+void
+SCC::activarUART(void){
+	puerto_serial = (uart_t *) (0xc0);
+puerto_serial->status_control_b = 0b00011000;
+}

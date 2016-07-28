@@ -1,25 +1,16 @@
 #include "FreeRTOS.h"
-#include "queue.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "driverUS.h"
 #include "GPIO.h"
 
-extern QueueHandle_t colaRecep;
-volatile float tiempo = 0,distancia = 0;
+volatile float tiempo = 0,distancia = 0; //ver si hace falta q sean volatile
 volatile char bandera =  0;
-
 
 
 volatile uint8_t *pcimask;
 volatile uint8_t *timer3crb;
-
-			volatile uint8_t *pcimsk;
-			volatile uint8_t *pcicr;
-			volatile uint8_t *tmr3crb;
-			volatile uint8_t *tifr3;
-			volatile uint8_t *timsk3;
 //**********************************************************************
 DriverUS::DriverUS(void){
 }
@@ -35,22 +26,19 @@ DriverUS::init(){
 	pcimask = pcimsk;
 	timer3crb = tmr3crb;
 	
-	*tmr3crb=0x02;		 //Clock= Fosc/8 (tiempo de desborde=32.76 mS, tiempo unitario=500 nS)     ???
+	*tmr3crb=0x02;		 //Clock= Fosc/8 (tiempo de desborde=32.76 mS, tiempo unitario=500 nS)     
 	*pcimsk=0x20;		//Interrupcion en PCINT5;
 	*pcicr=0x01;		//Habilita interrpciones por PCINT
 	*timsk3 = 0;
-	bandera=0;
-	
-	
 }
 //**********************************************************************
 
-float
+float //volatile float?
 DriverUS::calculaDistancia(){//dist <30 stop, 
-volatile uint8_t aux1tmr3, aux2tmr3;
 /* El esquematico dice que SENSOR_0 esta conectado al ADC5, sin embargo, esta conectado al SENSOR_5.
  * Por lo tanto, el sensor de ultrasonido esta conectado en el S5 del robot */
-GPIO ultrasonido((volatile uint8_t *) 0x21,(volatile uint8_t *) 0x20, 5);	//Sensor ultrasonido RA5
+GPIO ultrasonido((volatile uint8_t *) 0x21,(volatile uint8_t *) 0x20, 5);	//Sensor ultrasonido RA5	
+volatile uint8_t aux1tmr3, aux2tmr3;
 
 	cli();
 	ultrasonido.direccion(1);
@@ -61,11 +49,10 @@ GPIO ultrasonido((volatile uint8_t *) 0x21,(volatile uint8_t *) 0x20, 5);	//Sens
 	ultrasonido.estado(0);
 	ultrasonido.direccion(0);	//Se pone como entrada para leer la longitud del pulso
 	bandera=0;
-
-	*pcimsk=0x20;		//Interrupcion en PCINT5;
-	*pcicr=0x01;		//Habilita interrpciones por PCINT0
+	
+	*pcimsk = 0x20;
+	*pcicr = 0x01;
 	sei();
-
 	
 	while(bandera==0);		//Espera a que se interrumpa
 
@@ -77,7 +64,7 @@ GPIO ultrasonido((volatile uint8_t *) 0x21,(volatile uint8_t *) 0x20, 5);	//Sens
 	{
 		cli();
 		*tifr3=0x01;	//Pone un uno en el bit TOV3 para bajar la bandera
-		distancia=400;
+		distancia = 400;
 	}
 	else
 	{
@@ -92,8 +79,7 @@ GPIO ultrasonido((volatile uint8_t *) 0x21,(volatile uint8_t *) 0x20, 5);	//Sens
 return distancia;
 }
 //**********************************************************************
-ISR(PCINT0_vect){// 5 para cuando esta cerca de objeto, 6 para cuando no lo esta
-int proximo = 6; 
+ISR(PCINT0_vect){
 	
 	if(bandera==0)
 	{

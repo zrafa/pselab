@@ -42,6 +42,9 @@ class SerialPort
         int        putchar(int c);
         int        puts(const char * s);
 
+		void	activarSerial();
+		void	desactivarSerial();
+		
         int        getcharr();
         char *     gets(char *s);
 

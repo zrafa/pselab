@@ -191,7 +191,7 @@ SerialPort::getcharr(void) //rr
         scc.rxStart(channel);
     }
 
-    if (pRxQueue->isEmpty())
+   else if (pRxQueue->isEmpty())
     {
         return (-1);               // There is no input data available.
     }
@@ -247,3 +247,13 @@ SerialPort::gets(char * s)
 
 }   /* gets() */
 
+//**********************************************************************
+void
+SerialPort::desactivarSerial(void){
+	scc.desactivarUART();
+}
+
+void
+SerialPort::activarSerial(void){
+	scc.activarUART();
+}

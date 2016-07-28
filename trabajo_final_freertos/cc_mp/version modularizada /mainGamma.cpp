@@ -11,11 +11,11 @@
 #include <avr/interrupt.h>//sacar?
 													
 #define prioridadChief (tskIDLE_PRIORITY) + 3 //la de mayor prioridad
-#define prioridadUS (tskIDLE_PRIORITY) + 1
+#define prioridadUS (tskIDLE_PRIORITY) + 2
 #define prioridadMTR (tskIDLE_PRIORITY) + 2
-#define prioridadRF (tskIDLE_PRIORITY) + 1
-#define prioridadSM (tskIDLE_PRIORITY) + 1
-#define prioridadLED (tskIDLE_PRIORITY) + 1
+#define prioridadRF (tskIDLE_PRIORITY) + 2
+#define prioridadSM (tskIDLE_PRIORITY) + 2
+#define prioridadLED (tskIDLE_PRIORITY) + 2
 
 static void taskChief(void *pvParameters);
 static void taskLED(void *pvParameters);
@@ -24,72 +24,100 @@ static void taskSM(void *pvParameters);
 static void taskUS(void *pvParameters);
 static void taskRF(void *pvParameters);
 
-
+SerialPort serial(0, 9600L, 64, 64);
 GPIO bicolor((volatile uint8_t *) 0x21,(volatile uint8_t *) 0x20, 7);	//Led bicolor en RA7
 
-QueueHandle_t colaRecep, colaMtr, colaLED;	// !!!!!!!!!!!!!!!!!!!!!!!
-TaskHandle_t handleMTR, handleCHF, handleLED, handleRF, handleSM, handleUS; 
-//***********************Definicion de Tareas***************************
-void taskSM(void *pvParameters){
-	DriverSM sensorMovi;
-	sensorMovi.init();	
+QueueHandle_t colaRecep, colaMtr, colaLED;
+TaskHandle_t handleMTR, handleCHF, handleLED, handleRF, handleSM, handleUS;
+//**********************************************************************  
+//***********************DEFINICION DE TAREAS***************************
+//______________________________________________________________________
+
+void taskSM(void *pvParameters){//hacerle un delay? bajarle la prioridad?
+DriverSM sensorMovi;
+sensorMovi.init();	
 
 	for(;;){} //no hago nada, se queda esperando hasta q se produce interrupcion.
 }
+//______________________________________________________________________
 
-void taskUS(void *pvParameters){//hacerla periodica??
-	DriverUS ultraSoni;
-	ultraSoni.init();
-	bicolor.direccion(0);	//Apaga el bicolor
-	volatile float distancia;
+void taskUS(void *pvParameters){//ver si hacerla periodica
+DriverUS ultraSoni;
+volatile float distancia;	
+int para = 5, sigue = 6;
+ultraSoni.init();
+//bicolor.direccion(0);
 	
-	int para = 5, sigue = 6;
 	for(;;){
-		
 		distancia = ultraSoni.calculaDistancia();
-	
-		if(distancia>2 && distancia<15)
-		{
-			//vTaskSuspend(handleLED);
+		if(distancia > 2 && distancia < 15){
 			bicolor.estado(0);		//enciende el rojo
-			bicolor.direccion(1);	//pin como salida
-			//poner en colaRecep para q pare
-			xQueueSend(colaRecep,(void *)&para,(portTickType)1000);
+			bicolor.direccion(1);	//pin como salida	
+			xQueueSend(colaRecep,(void *)&para,(portTickType)2000);//poner en colaRecep para que lo lea chief y no le permita avanzar (hacia adelante) a motores
 		}
 		else{
-			xQueueSend(colaRecep,(void *)&sigue,(portTickType)1000);
-			//avisarle pa q siga
+			xQueueSend(colaRecep,(void *)&sigue,(portTickType)2000);//esta permitido avanzar hacia adelante, ie hay lugar para moverse
 			bicolor.direccion(0);
-			}
+		}
 		
-		vTaskDelay(200);
+	vTaskDelay(200);
 	}
 }
- 
-void taskRF(void *pvParameters){
-SerialPort serial(0, 19200L, 64, 64);
-int c;
+//______________________________________________________________________
 
-	for(;;){
+void taskRF(void *pvParameters){
+int c=0 , w = 1, s = 2, a = 3, d = 4, o = 7, p = 8;
+
+	
+	for(;;){	
+	
+	bicolor.direccion(1);
+	bicolor.estado(1);
 	c = serial.getcharr(); //leo y prendo led- es para probar. desp deberia poner en la cola de recep, para q chief le avise a motores
 	
 		if(c != -1){
-			if(c == 'p')
-				vTaskSuspend(handleLED);
-			if(c == 'a')
-				vTaskResume(handleLED);
+			
+				
+			switch(c){
+				
+				case 'p':
+					vTaskSuspend(handleLED);
+					break;
+				case 'l':
+					vTaskResume(handleLED);
+					break;
+				case 'w':
+					xQueueSend(colaMtr, (void *)&w, (portTickType)2000);
+					break;
+				case 's':
+					xQueueSend(colaMtr, (void *)&s, (portTickType)2000);
+					break;	
+				case 'a':
+					xQueueSend(colaMtr, (void *)&a, (portTickType)2000);
+					break;
+				case 'd':
+					xQueueSend(colaMtr, (void *)&d, (portTickType)2000);
+					break;	
+				//case:'o'			//activo modo autónomo
+					//xQueueSend(colaMtr, (void *)&o, (portTickType)2000)
+					//break;
+				//case:'p'			//desactivo modo autónomo
+					//xQueueSend(colaMtr, (void *)&p, (portTickType)2000)
+					//break;
+				//case 'x' //activar/desactivar sensores movimiento? para cuando este quieto. subiria alguna bandera en registro (int0/int1)
+			}
+										
 		}
-		vTaskDelay(300);
+		
+		//vTaskDelay(300);
 	}
 }
-
- 
- 
+//______________________________________________________________________
  
 void taskChief(void *pvParameters){ 	 
-	int comando = -1;
+int comando = -1;
 	for(;;){
-		xQueueReceive(colaRecep, (void *)&comando, (portTickType)50);//se bloquea, como maximo, 50 ticks hast q llega un dato (sin un dato no hago nada, asi q se bloquea)
+		xQueueReceive(colaRecep, (void *)&comando, (portTickType)2000);//se bloquea, como maximo, 2k ticks hast q llega un dato (sin un dato no hago nada, asi q se bloquea)
 		
 		switch(comando){
 			case 1:
@@ -98,19 +126,18 @@ void taskChief(void *pvParameters){
 			case 4:
 			case 5:
 			case 6:
-					xQueueSend(colaMtr, (void *)&comando, (portTickType)10 );//casos en q se recibe info de SM o RF
-					break;					
-			
+				xQueueSend(colaMtr, (void *)&comando, (portTickType)2000);//casos en q se recibe info de SM o RF
+				break;							
 			case 7:
 			case 8:
-					xQueueSend(colaLED, (void *)&comando, (portTickType)10 );//necesario?? no creo, estaba por si hacia falta una cola para avisarle de q forma parpadear al led
-					break;
-			
-			//default necesario?
-		}					
+				xQueueSend(colaLED, (void *)&comando, (portTickType)1000);//necesario?? no creo, estaba por si hacia falta una cola para avisarle de q forma parpadear al led
+				break;		
+		}
+	comando = -1;				
 	}
 		
 }
+//______________________________________________________________________
 
 void taskLED(void *pvParameters){//hacer q el led amarillo se apague y prenda siempre, mientras q los bicolores solo se prendan en otras circunstancias (cuando dobla o retrocede por ej)
 Led led((volatile uint8_t *) 0x24,(volatile uint8_t *) 0x25, 0x80);	
@@ -119,47 +146,48 @@ Led led((volatile uint8_t *) 0x24,(volatile uint8_t *) 0x25, 0x80);
 		//xQueueReceive(colaLED, (void *)&comando, (portTickType)20);
 		//if(){}//preguntar si dobló para prender verde/amarillo?
 		led.toggle();
-		vTaskDelay(100);
+		vTaskDelay(200);
 	}
 }
+//______________________________________________________________________
 
 void taskMTR(void *pvParameters){ 
 Motor motores;
 int mover = -1, parar = 0;
 
 	for(;;){
-		xQueueReceive(colaMtr, (void *)&mover, (portTickType)10);
-	//1 avanza, 2 retrocede, 3 dobla izquierda, 4 dobla derecha, 5 frena(orden del US)
+		xQueueReceive(colaMtr, (void *)&mover, (portTickType)1000);
+	//1) avanza, 2) retrocede, 3) dobla izquierda, 4) dobla derecha, 5) no avanzar(orden del US), 6) puede avanzar(orden del US)
 		switch(mover){
 			case 1:
-				if(parar =! 1){ //cuando el US esta muy cerca de algo, no se puede avanzar(solo hacia adelante) mas, por ejemplo si por RF se le solicita hacerlo
+				serial.desactivarSerial();
+				//if(parar =! 1){ //cuando el US esta muy cerca de algo, no se puede avanzar(solo hacia adelante) mas, por ejemplo si por RF se le solicita hacerlo
 				motores.M_adelante(0xFFFF);
 				vTaskDelay(350);
 				motores.M_adelante(0);
-				mover = -1;
-				}		
+				mover = -1;// poner una sola vez afuera del switch.
+				//}		
 				break;
-			case 2:			
+			case 2:
+			serial.desactivarSerial();	
 				motores.M_atras(0xFFFF);
 				vTaskDelay(350);
 				motores.M_atras(0);
 				mover = -1;
 				break;
 			case 3:
-				cli();		
+				serial.desactivarSerial();		
 				motores.M_izquierda(0xFFFF);		
-				vTaskDelay(350);
+				vTaskDelay(150);
 				motores.M_izquierda(0);
-				mover = -1;		
-				sei();		 
+				mover = -1;				 
 				break;
 			case 4:
-				cli();
+				serial.desactivarSerial();
 				motores.M_derecha(0xFFFF);
-				vTaskDelay(350);
+				vTaskDelay(150);
 				motores.M_derecha(0);
 				mover = -1;			
-				sei();
 				break;
 			case 5://el us aviso q se esta cerca de la pared por ej
 				parar = 1;
@@ -168,9 +196,13 @@ int mover = -1, parar = 0;
 				parar = 0;
 				break;
 		
-		}	
+		}
+		serial.activarSerial();	
 	}
 }
+//______________________________________________________________________
+
+//*******************************MAIN***********************************
 //********************************************************************** 
 int main(void){
 				

@@ -10,7 +10,8 @@ class DriverSM{
 	public:
 		DriverSM();
 		void init();
-	
+		void scanOff();
+		void scanOn();
 	private:
 		volatile uint8_t *eicra;
 		volatile uint8_t *eimsk;

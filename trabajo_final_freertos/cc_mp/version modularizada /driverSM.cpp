@@ -20,6 +20,16 @@ DriverSM::init(){
 	sei();
 }
 //**********************************************************************
+void
+DriverSM::scanOff(){
+*eimsk = 0b00000000;
+}
+//**********************************************************************
+void
+DriverSM::scanOn(){
+*eimsk = 0b00000011;	
+}
+//**********************************************************************
 ISR(INT0_vect){//isr para interrupcion por int0
 	signed portBASE_TYPE xTaskWokenByPost; 
 	xTaskWokenByPost = pdFALSE;
