@@ -13,6 +13,12 @@ SOURCES =	../FreeRTOS/Source/list.o \
 			led.o \
 			motor.o \
 			GPIO.o \
+			driverSM.o \
+			driverUS.o \
+			serial.o \
+			scc.o \
+			new.o \
+			circbuf.o \
 			$(MAIN).o
 
 MMCU = atmega1284p
@@ -22,7 +28,7 @@ HFLAGS = -O ihex -R .eeprom
 
 MAIN = mainGamma
 
-all: $(SOURCES) link hex hid
+all: $(SOURCES) link hex
 
 clean:
 	-rm *.o *.hex $(MAIN) \

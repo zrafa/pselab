@@ -1,16 +1,18 @@
+#include "FreeRTOS.h"
+#include "queue.h"
+
 #ifndef _DRIVERUS_H
 #define _DRIVERSM_H
 
-Class DriverUS{
+class DriverUS{
 			
 		public:
 			DriverUS();
 			void init();
-			void setCola(QueueHandle_t *hc);
+			float calculaDistancia();
 		
 		private:
-			volatile uint8_t *pcimsk;
-			volatile uint8_t *pcicr;
-			volatile uint8_t *tmr3crb;
-	}
+
+};
+
 #endif

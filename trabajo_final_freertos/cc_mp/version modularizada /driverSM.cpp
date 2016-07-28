@@ -5,7 +5,7 @@
 #include <avr/interrupt.h>
 #include "driverSM.h" 
 
-xQueueHandle handleCola;// esta bien? ponerlo como variable de instancia mejor en el .h?
+extern QueueHandle_t colaRecep;
 
 //**********************************************************************
 DriverSM::DriverSM(void){
@@ -20,19 +20,12 @@ DriverSM::init(){
 	sei();
 }
 //**********************************************************************
-void
-DriverSM::setCola(QueueHandle_t *hc){//mmmm..?
-	handleCola = *hc;
-}
-
-//**********************************************************************
-
 ISR(INT0_vect){//isr para interrupcion por int0
 	signed portBASE_TYPE xTaskWokenByPost; 
 	xTaskWokenByPost = pdFALSE;
-	int a = 1;	// 1 para doblar izq
+	int a = 3;	// 3 para doblar izq
 	
-	xTaskWokenByPost = xQueueSendFromISR(handleCola, &a, &xTaskWokenByPost);
+	xTaskWokenByPost = xQueueSendFromISR(colaRecep, &a, &xTaskWokenByPost);
 	
 	if(xTaskWokenByPost) // != pdFALSE
 		taskYIELD();	//forza el cambio de contexto	
@@ -41,9 +34,9 @@ ISR(INT0_vect){//isr para interrupcion por int0
 ISR(INT1_vect){//isr para interrupcion por int1
 	signed portBASE_TYPE xTaskWokenByPost;
 	xTaskWokenByPost = pdFALSE;
-	int b = 2;	// 2 para doblar derecha
+	int b = 4;	// 4 para doblar derecha
 	
-	xTaskWokenByPost = xQueueSendFromISR(handleCola, &b, &xTaskWokenByPost);
+	xTaskWokenByPost = xQueueSendFromISR(colaRecep, &b, &xTaskWokenByPost);
 	
 	if(xTaskWokenByPost)
 		taskYIELD();	//forza el cambio de contexto

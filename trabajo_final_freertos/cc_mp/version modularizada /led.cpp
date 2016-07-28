@@ -22,6 +22,11 @@ Led::apaga()
 {
 	*rehl &= (~lM);
 }
+void
+Led::toggle()
+{
+	*rehl ^= lM;
+}
 
 void
 Led::delay_ms(int ms)

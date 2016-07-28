@@ -16,6 +16,7 @@ class Led
 		void enciende();
 		void apaga();
 		void delay_ms(int ms);
+		void toggle();
 		
 		volatile uint8_t *rdd;
 		volatile uint8_t *rehl;
