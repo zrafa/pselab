@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <stdlib.h>
+#include <avr/interrupt.h>
 #include "spi.h"
 //#include "nRF24L01.h"
 //#include "scc.h"
@@ -16,23 +17,22 @@ SerialPort serial(0, 9600, 120, 120);
 
 //void leer_caracter (void *pvParameters);
 void mostrar_medicion_imu ();
-void delay(int milisegundos);
 
 int main (){
-
+sei();
 spi.SPI_MasterInit();
 serial.puts("Hola");
 
 while (1){
 
-//delay(1000);
 mostrar_medicion_imu();
-delay(9000);
+
 /*led_rojo.encender();
 led_rojo.delay(1000);
 led_rojo.apagar();
 led_rojo.delay(1000);
 */
+
 }
 
 return 1;
@@ -61,40 +61,44 @@ case 105 : //Inicializamos el tr en modo PTX.
 void mostrar_medicion_imu (){
 
 spi.cs(0);
-//uint8_t read_h = ((imu.get_sensor_magnetico())->hzh) ;
-//delay(9000);
+uint8_t read_h = ((imu.get_sensor_magnetico())->hzh) ;
+
 volatile uint8_t cr= ((spi.get_registros_spi())->control_register);
-//uint8_t *read = (uint8_t *)0x88;
+volatile uint8_t sr= ((spi.get_registros_spi())->status_register);
+
 uint8_t x=(spi.get_pspi())->ddr_spi;
-// Obtenemos la medicion realizada por la imu.
-//spi.SPI_MasterTransmit(read_h);
-//uint8_t *read = (uint8_t *)0x88;
 
-//uint8_t medicion_h=spi.SPI_SlaveReceive();
-//uint8_t medicion_h = 12;
-//uint8_t read_l = ((imu.get_sensor_magnetico())->hzl) | 0x80;
-spi.SPI_MasterTransmit(0x0A);
+spi.SPI_MasterTransmit(0x48);
+spi.SPI_MasterTransmit(0x01);
+uint8_t data_h=spi.SPI_SlaveReceive();
 
-//uint8_t medicion_l=spi.SPI_SlaveReceive();
+spi.SPI_MasterTransmit(0x01);
+uint8_t data_l=spi.SPI_SlaveReceive();
+
+char k[100];
+sprintf(k, "Este es el valor de hzh despues de ejecutar el 1 master_transmit : %x ", data_h);
+serial.puts(k);
+
+sprintf(k, "Este es el valor de hzl despues de ejecutar el 2 master_transmit : %x ", data_l);
+serial.puts(k);
 
 spi.cs(1);
-//int medicion=10;
+
 char mensaje[100], men[100];
 sprintf(mensaje, "Este es el contenido del registro ddr_spi %x ", x);
+
 //Enviamos el contenido de mensaje al registro de datos.
 serial.puts(mensaje);
 sprintf(men, "Este es el contenido de SPCR : %x", cr);
 serial.puts(men);
-/*led_rojo.encender();
-led_rojo.delay(1000);
-led_rojo.apagar();*/
-}
-
-void delay (int milisegundos){
-
-int n=(100*milisegundos);
-int i;
-for(i=0; i<n; i++)
-	;
 
 }
+
+ISR ( SPI_STC_vect ){
+
+char k[100];
+sprintf(k, "Este es el contenido de SPDR dentro de ISR : %x ", (spi.get_registros_spi())->data_register);
+serial.puts(k);
+
+}
+

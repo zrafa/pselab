@@ -1,6 +1,7 @@
 
 #include "spi.h"
 #include "avr/io.h"
+#include "avr/interrupt.h"
 
 SPI::SPI(){
 
@@ -25,8 +26,8 @@ SPI::SPI_MasterInit (void){
 /* Set MOSI, SCK and CS or ~SS and CE as output, all others input 0010 1110 = 0x2e*/
 pSPI_struct->ddr_spi |= (MOSI | SCK | CS | CE); //| CE 
 
-/* Enable SPI, Master, set clock rate fck/16 0101 0001 = 0x51*/
-registros_spi->control_register = 0x51;//(SPE |MSTR |SPR0);
+/* Enable SPI, Master, set clock rate fck/16 1101 0001 = 0xd1*/
+registros_spi->control_register = (spie | spe | mstr | spr1 | spi2x);
 
 
 }
@@ -37,8 +38,7 @@ SPI::SPI_MasterTransmit(uint8_t data){
 /* Start transmission */
 registros_spi->data_register = data;
 /* Wait for transmission complete */
-//while(!(((registros_spi->status_register)) & SPIF))
-//	;
+
 
 }
 
@@ -103,8 +103,8 @@ uint8_t
 SPI::SPI_SlaveReceive(void){
 
 /* Wait for reception complete */
-while(!((registros_spi->status_register) & SPIF))
-	;
+//while(!((registros_spi->status_register) & SPIF))
+	//;
 
 /* Return Data Register */
 return (registros_spi->data_register);
@@ -130,4 +130,5 @@ SPI::get_pspi(){
 return pSPI_struct;
 
 }
+
 

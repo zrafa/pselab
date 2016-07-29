@@ -23,22 +23,21 @@
 
 /* SPI Control Register */
 #define SPCR_   0x4C //– SPI Control Register 
-#define SPIE  (1<<7)// SPI Interrupt Enable
-#define SPE   (1<<6)// – SPE: SPI Enable
+#define spie  (1<<7)// SPI Interrupt Enable
+#define spe   (1<<6)// – SPE: SPI Enable
 #define DORD  (1<<5)// – DORD: Data Order
-#define MSTR  (1<<4)//– MSTR: Master/Slave Select
+#define mstr  (1<<4)//– MSTR: Master/Slave Select
 #define CPOL  (1<<3)//  CPOL: Clock Polarity
 #define CPHA  (1<<2)//CPHA: Clock Phase	
 
-#define SPR1  (1<<1)//Bits 1, 0 – SPR1, SPR0: SPI Clock Rate Select 1 and 0
-#define SPR0  (1<<0)//Bits 1, 0 – SPR1, SPR0: SPI Clock Rate Select 1 and 0
-
+#define spr1  (1<<1)//Bits 1, 0 – SPR1, SPR0: SPI Clock Rate Select 1 and 0
+#define spr0  (1<<0)//Bits 1, 0 – SPR1, SPR0: SPI Clock Rate Select 1 and 0
 
 /* SPI Status Register */
 #define SPSR    0x4D  //– SPI Status Register
 #define SPIF   (1<<7)// SPI Interrupt Flag
 #define WCOL   (1<<6)// Write COLlision Flag
-#define SPI2X  (1<<5)// Double SPI Speed Bit
+#define spi2x  (1<<5)// Double SPI Speed Bit
 
 
 /* SPI Data Register */

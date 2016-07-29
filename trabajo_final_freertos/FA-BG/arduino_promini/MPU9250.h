@@ -7,7 +7,7 @@
 #define INIT_GYRO     0x43
 #define INIT_ACCEL    0x3B
 #define INIT_TEMP     0x41
-#define INIT_MG       0x03
+#define INIT_MG       0x43 //read = 1.
 
 typedef struct {
 
