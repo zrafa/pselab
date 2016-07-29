@@ -33,7 +33,7 @@ DriverSM::scanOn(){
 ISR(INT0_vect){//isr para interrupcion por int0
 	signed portBASE_TYPE xTaskWokenByPost; 
 	xTaskWokenByPost = pdFALSE;
-	int a = 3;	// 3 para doblar izq
+	int a = 33;	// 3 para doblar izq
 	
 	xTaskWokenByPost = xQueueSendFromISR(colaRecep, &a, &xTaskWokenByPost);
 	
@@ -44,7 +44,7 @@ ISR(INT0_vect){//isr para interrupcion por int0
 ISR(INT1_vect){//isr para interrupcion por int1
 	signed portBASE_TYPE xTaskWokenByPost;
 	xTaskWokenByPost = pdFALSE;
-	int b = 4;	// 4 para doblar derecha
+	int b = 44;	// 4 para doblar derecha
 	
 	xTaskWokenByPost = xQueueSendFromISR(colaRecep, &b, &xTaskWokenByPost);
 	

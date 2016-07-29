@@ -118,8 +118,8 @@ SCC::txStart(int channel)
 	
 	
     while(txQueue[channel]->isEmpty() != 1){
-		//q hacer aca?
-	}
+		serial_put_char(txQueue[channel]->remove());
+		}
 	puerto_serial->status_control_b = (puerto_serial->status_control_b) & (~ TX_INT);  //desactivo
 	
 }   

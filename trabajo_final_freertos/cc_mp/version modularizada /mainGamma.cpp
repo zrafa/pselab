@@ -50,7 +50,9 @@ xLastWakeTime = xTaskGetTickCount();
 void taskUS(void *pvParameters){//ver si hacerla periodica
 DriverUS ultraSoni;
 volatile float distancia;
-int dist;
+int dist, centena, decena, unidad;
+char str[4];
+
 int para = 5, sigue = 6;
 ultraSoni.init();
 //bicolor.direccion(0);
@@ -61,8 +63,29 @@ xLastWakeTime = xTaskGetTickCount();
 		vTaskDelayUntil(&xLastWakeTime, 100);
 		
 		distancia = ultraSoni.calculaDistancia();
-		bicolor.direccion(1);
-	bicolor.estado(1);
+		
+		if(distancia>0 && distancia<100)
+{
+dist = (char)(distancia);
+centena=(int)(dist/100);
+dist=dist-(centena*100);
+decena=(int)(dist/10);
+dist=dist-(decena*10);
+unidad=(int)(dist);
+str[0]=centena + 0x30;
+str[1]=decena + 0x30;
+str[2]=unidad + 0x30;
+str[3]=0;
+serial.puts(str);
+}
+else
+{
+serial.puts(">99");
+}
+		
+		
+		//bicolor.direccion(1);
+		//bicolor.estado(1);
 		//serial.puts("_xe_");
 		if(distancia > -1 && distancia < 25){
 			bicolor.estado(0);		//enciende el rojo
@@ -148,6 +171,8 @@ int comando = -1;
 			case 4:
 			case 5:
 			case 6:
+			case 33:
+			case 44:
 				xQueueSend(colaMtr, (void *)&comando, (portTickType)2000);//casos en q se recibe info de SM o RF
 				break;							
 			case 7:
@@ -204,8 +229,8 @@ int mover = -1, parar = 0;
 			case 3:
 				cli();
 				serial.desactivarSerial();		
-				motores.M_izquierda(0x8FFF);		
-				vTaskDelay(50);
+				motores.M_izquierda(0xFFFF);		
+				vTaskDelay(80);
 				motores.M_izquierda(0);
 				mover = -1;				 
 				sei();
@@ -213,8 +238,8 @@ int mover = -1, parar = 0;
 			case 4:
 				cli();
 				serial.desactivarSerial();
-				motores.M_derecha(0x8FFF);
-				vTaskDelay(50);
+				motores.M_derecha(0xFFFF);
+				vTaskDelay(80);
 				motores.M_derecha(0);
 				mover = -1;		
 				sei();	
@@ -225,7 +250,25 @@ int mover = -1, parar = 0;
 			case 6://el us dice que se puede seguir moviendo libremente
 				parar = 0;
 				break;
-		
+			case 33:
+				cli();
+				serial.desactivarSerial();		
+				motores.M_izquierda(0x8FFF);		
+				vTaskDelay(8);
+				motores.M_izquierda(0);
+				mover = -1;				 
+				sei();
+				break;
+			case 44:
+				cli();
+				serial.desactivarSerial();
+				motores.M_derecha(0x8FFF);
+				vTaskDelay(8);
+				motores.M_derecha(0);
+				mover = -1;		
+				sei();
+				break;
+			
 		}
 		serial.activarSerial();	
 	}

@@ -157,7 +157,7 @@ SerialPort::puts(const char * s)
     //
     // Add a newline character.
     //
-	putchar('\n');
+	putchar('\r');//antes estaba /n
 
     return ((p - s) + 1);
 
