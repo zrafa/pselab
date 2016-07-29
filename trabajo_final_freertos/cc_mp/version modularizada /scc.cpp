@@ -181,8 +181,8 @@ SCC::serial_put_char (char outputChar)
     
     puerto_serial->data_es = outputChar; // envio dato por puerto serial (lo escribo en el reg de datos de e/s)
   
-    while(((puerto_serial->status_control_a) & TXCn) == 0){ //bit 6 (txcn) del s_c_a esta en 1 cuando el frame del transmit shift register se "shifteo" y no hay datos nuevos actualmente en el buffer de transmision (udrn)
-	}	
+  //  while(((puerto_serial->status_control_a) & TXCn) == 0){ //bit 6 (txcn) del s_c_a esta en 1 cuando el frame del transmit shift register se "shifteo" y no hay datos nuevos actualmente en el buffer de transmision (udrn)
+	//}	
 	/*inicializaLed();
 	cambiaLed(); llega aca(transmitio??), prende el led.. */
 }

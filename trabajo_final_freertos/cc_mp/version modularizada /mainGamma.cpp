@@ -11,7 +11,7 @@
 #include <avr/interrupt.h>//sacar?
 													
 #define prioridadChief (tskIDLE_PRIORITY) + 3 //la de mayor prioridad
-#define prioridadUS (tskIDLE_PRIORITY) + 2
+#define prioridadUS (tskIDLE_PRIORITY) + 3
 #define prioridadMTR (tskIDLE_PRIORITY) + 2
 #define prioridadRF (tskIDLE_PRIORITY) + 2
 #define prioridadSM (tskIDLE_PRIORITY) + 2
@@ -29,38 +29,55 @@ GPIO bicolor((volatile uint8_t *) 0x21,(volatile uint8_t *) 0x20, 7);	//Led bico
 
 QueueHandle_t colaRecep, colaMtr, colaLED;
 TaskHandle_t handleMTR, handleCHF, handleLED, handleRF, handleSM, handleUS;
+
+DriverSM sensorMovi;
 //**********************************************************************  
 //***********************DEFINICION DE TAREAS***************************
 //______________________________________________________________________
 
 void taskSM(void *pvParameters){//hacerle un delay? bajarle la prioridad?
-DriverSM sensorMovi;
-sensorMovi.init();	
+portTickType xLastWakeTime;
+sensorMovi.init();
+sensorMovi.scanOff();
 
-	for(;;){} //no hago nada, se queda esperando hasta q se produce interrupcion.
+xLastWakeTime = xTaskGetTickCount();
+	for(;;){
+		vTaskDelayUntil(&xLastWakeTime, 3000);
+	} //no hago nada, se queda esperando hasta q se produce interrupcion.
 }
 //______________________________________________________________________
 
 void taskUS(void *pvParameters){//ver si hacerla periodica
 DriverUS ultraSoni;
-volatile float distancia;	
+volatile float distancia;
+int dist;
 int para = 5, sigue = 6;
 ultraSoni.init();
 //bicolor.direccion(0);
+portTickType xLastWakeTime;
+xLastWakeTime = xTaskGetTickCount();
 	
 	for(;;){
+		vTaskDelayUntil(&xLastWakeTime, 100);
+		
 		distancia = ultraSoni.calculaDistancia();
-		if(distancia > 2 && distancia < 15){
+		bicolor.direccion(1);
+	bicolor.estado(1);
+		//serial.puts("_xe_");
+		if(distancia > -1 && distancia < 25){
 			bicolor.estado(0);		//enciende el rojo
 			bicolor.direccion(1);	//pin como salida	
 			xQueueSend(colaRecep,(void *)&para,(portTickType)2000);//poner en colaRecep para que lo lea chief y no le permita avanzar (hacia adelante) a motores
+			//dist = (int)distancia;
+			//dist
+			
 		}
 		else{
 			xQueueSend(colaRecep,(void *)&sigue,(portTickType)2000);//esta permitido avanzar hacia adelante, ie hay lugar para moverse
 			bicolor.direccion(0);
 		}
 		
-	vTaskDelay(200);
+	//vTaskDelay(50);
 	}
 }
 //______________________________________________________________________
@@ -104,7 +121,12 @@ int c=0 , w = 1, s = 2, a = 3, d = 4, o = 7, p = 8;
 				//case:'p'			//desactivo modo autónomo
 					//xQueueSend(colaMtr, (void *)&p, (portTickType)2000)
 					//break;
-				//case 'x' //activar/desactivar sensores movimiento? para cuando este quieto. subiria alguna bandera en registro (int0/int1)
+				case 'x':
+					sensorMovi.scanOff();
+					break;
+				case 'b':
+					sensorMovi.scanOn();
+					break;
 			}
 										
 		}
@@ -156,38 +178,46 @@ Motor motores;
 int mover = -1, parar = 0;
 
 	for(;;){
-		xQueueReceive(colaMtr, (void *)&mover, (portTickType)1000);
+		xQueueReceive(colaMtr, (void *)&mover, (portTickType)2000);
 	//1) avanza, 2) retrocede, 3) dobla izquierda, 4) dobla derecha, 5) no avanzar(orden del US), 6) puede avanzar(orden del US)
 		switch(mover){
 			case 1:
+				cli();
 				serial.desactivarSerial();
-				//if(parar =! 1){ //cuando el US esta muy cerca de algo, no se puede avanzar(solo hacia adelante) mas, por ejemplo si por RF se le solicita hacerlo
-				motores.M_adelante(0xFFFF);
+				if(parar == 0){ //cuando el US esta muy cerca de algo, no se puede avanzar(solo hacia adelante) mas, por ejemplo si por RF se le solicita hacerlo
+				motores.M_adelante(0xAFFF);
 				vTaskDelay(350);
 				motores.M_adelante(0);
 				mover = -1;// poner una sola vez afuera del switch.
-				//}		
+				sei();
+				}		
 				break;
 			case 2:
-			serial.desactivarSerial();	
+				cli();
+				serial.desactivarSerial();	
 				motores.M_atras(0xFFFF);
 				vTaskDelay(350);
 				motores.M_atras(0);
 				mover = -1;
+				sei();
 				break;
 			case 3:
+				cli();
 				serial.desactivarSerial();		
-				motores.M_izquierda(0xFFFF);		
-				vTaskDelay(150);
+				motores.M_izquierda(0x8FFF);		
+				vTaskDelay(50);
 				motores.M_izquierda(0);
 				mover = -1;				 
+				sei();
 				break;
 			case 4:
+				cli();
 				serial.desactivarSerial();
-				motores.M_derecha(0xFFFF);
-				vTaskDelay(150);
+				motores.M_derecha(0x8FFF);
+				vTaskDelay(50);
 				motores.M_derecha(0);
-				mover = -1;			
+				mover = -1;		
+				sei();	
 				break;
 			case 5://el us aviso q se esta cerca de la pared por ej
 				parar = 1;
