@@ -11,7 +11,7 @@
 #include <avr/interrupt.h>//sacar?
 													
 #define prioridadChief (tskIDLE_PRIORITY) + 3 //la de mayor prioridad
-#define prioridadUS (tskIDLE_PRIORITY) + 3
+#define prioridadUS (tskIDLE_PRIORITY) + 2
 #define prioridadMTR (tskIDLE_PRIORITY) + 2
 #define prioridadRF (tskIDLE_PRIORITY) + 2
 #define prioridadSM (tskIDLE_PRIORITY) + 2
@@ -188,12 +188,14 @@ int comando = -1;
 
 void taskLED(void *pvParameters){//hacer q el led amarillo se apague y prenda siempre, mientras q los bicolores solo se prendan en otras circunstancias (cuando dobla o retrocede por ej)
 Led led((volatile uint8_t *) 0x24,(volatile uint8_t *) 0x25, 0x80);	
-	
+portTickType xLastWakeTime;
+xLastWakeTime = xTaskGetTickCount();
 	for(;;){
+		vTaskDelayUntil(&xLastWakeTime, 200);
 		//xQueueReceive(colaLED, (void *)&comando, (portTickType)20);
 		//if(){}//preguntar si dobló para prender verde/amarillo?
 		led.toggle();
-		vTaskDelay(200);
+		//vTaskDelay(200);
 	}
 }
 //______________________________________________________________________
@@ -203,13 +205,13 @@ Motor motores;
 int mover = -1, parar = 0;
 
 	for(;;){
-		xQueueReceive(colaMtr, (void *)&mover, (portTickType)2000);
+		xQueueReceive(colaMtr, (void *)&mover, (portTickType)500);
 	//1) avanza, 2) retrocede, 3) dobla izquierda, 4) dobla derecha, 5) no avanzar(orden del US), 6) puede avanzar(orden del US)
 		switch(mover){
 			case 1:
 				cli();
 				serial.desactivarSerial();
-				if(parar == 0){ //cuando el US esta muy cerca de algo, no se puede avanzar(solo hacia adelante) mas, por ejemplo si por RF se le solicita hacerlo
+				if(parar == 0){ //cuando l US esta muy cerca de algo, no se puede avanzar(solo hacia adelante) mas, por ejemplo si por RF se le solicita hacerlo
 				motores.M_adelante(0xAFFF);
 				vTaskDelay(350);
 				motores.M_adelante(0);
