@@ -15,8 +15,10 @@
 #define TOP		0xFFFF	
 
 class Motor{
+	
 	public:
 		Motor();
+		void init();
 		void M_adelante(unsigned int pwm);
 		void M_atras(unsigned int pwm);
 		void M_izquierda(unsigned int pwm);

@@ -12,6 +12,9 @@ class DriverSM{
 		void init();
 		void scanOff();
 		void scanOn();
+		//void apagaIzq();
+		//void apagaDer();
+		
 	private:
 		volatile uint8_t *eicra;
 		volatile uint8_t *eimsk;

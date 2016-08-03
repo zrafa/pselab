@@ -9,7 +9,7 @@ class DriverUS{
 		public:
 			DriverUS();
 			void init();
-			float calculaDistancia(); //volatile float?
+			float calculaDistancia();
 		
 		private:
 			volatile uint8_t *pcimsk;
