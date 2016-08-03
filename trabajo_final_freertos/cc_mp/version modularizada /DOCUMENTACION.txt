@@ -5,73 +5,46 @@
 
 Descripción de las tareas :
 		
-	-Tarea correspondiente a los motores: se encarga de leer los comandos recibidos en la cola 'colaMtr' para luego indicarle a
-los motores la acción a realizar.
+	-Tarea correspondiente a los motores: se encarga de leer los comandos recibidos en la cola 'colaMtr' para luego indicarle a los motores la acción a realizar.
 
-	-Tarea correspondiente al sensor ultrasonico: se ejecuta en forma periódica cada 100 milisegundos. Calcula la distancia al
-objeto en su linea de vision. Muestra por pantalla la distancia medida y se comunica con la tarea de control, poniendo el
-comando en la cola 'colaRecep', para indicarle la acción a relizar en base a las mediciones hechas.
+	-Tarea correspondiente al sensor ultrasonico: se ejecuta en forma periódica cada 50 milisegundos. Calcula la distancia al objeto en su linea de vision. Muestra por pantalla la distancia medida y se comunican con la tarea de control, poniendo el comando en la cola 'colaRecep', para indicarle la acción a relizar en base a las mediciones hechas.
 		
-	-Tarea correspondiente a los LEDs: Se encarga de hacer parpadear el led amarillo del robot, para ser de testigo que el programa
-no esta trabado en alguna instruccion, y encender el led rojo en caso que el sensor de ultrasonido mida una distancia menor a la
-prefijada.
+	-Tarea correspondiente a los LEDs: Se encarga de hacer parpadear el led amarillo del robot para ser de testigo que el programa no esta trabado en alguna instruccion, y de encender el led rojo en caso que el sensor de ultrasonido mida una distancia menor a la prefijada.
 		
-	-Tarea correspondiente a la comunicacion por radio frecuencia entre el robot y la computadora: lee del serial los comandos
-enviados por la computadora y los envia a la cola 'colaRecep' de la tarea de control.
+	-Tarea correspondiente a la comunicacion por radio frecuencia entre el robot y la computadora: lee del serial los comandos enviados por la computadora y los envia a la cola 'colaRecep' de la tarea de control.
 	
-	-Tarea correspondiente a los sensores de movimiento: se ejecuta en forma periódica cada 2 segundos. Lee de la cola 'colaSM'
-para ver si se le dio la orden de activar o desactivar el escaneo producido por los sensores. Los movimientos detectados son manejados
-con interrupciones desde el driver 'driverSM'.
+	-Tarea correspondiente a los sensores de movimiento: se ejecuta en forma periódica cada 1 segundo. Los movimientos detectados son manejados con interrupciones desde el driver 'driverSM'.
 
-	-Tarea de Control: es la tarea de mayor prioridad, lee de la cola 'colaRecep' los comandos recibidos y los redirige a las
-tareas correspondientes.
+	-Tarea de Control: es la tarea de mayor prioridad, lee de la cola 'colaRecep' los comandos recibidos y los redirige a las tareas correspondientes.
 
 
 Descripción de los drivers:
 
-	-Driver de Motores: Utiliza los modulos de PWM para controlar la velocidad de los motores, y dos puertos (para cada motor) para
-definir el sentido de giro. Para apagarlos se llama a la funcion con dutycicle del PWM igual a cero.
+	-Driver de Motores: Utiliza los modulos de PWM para controlar la velocidad de los motores, y dos puertos (para cada motor) para definir el sentido de giro. Para apagarlos se llama a la funcion con dutycicle del PWM igual a cero.
 	
-	-Driver de Ultrasónico: Realiza la medicion mandando un pulso por el pin al cual esta conectado el sensor (en este caso es el RA7)
-de 10uS, y cuando llega la respuesta utiliza el Timer3 para cronometrar el tiempo. El inicio y fin del cronometrado se lleva a cabo con
-las interrupciones del puerto A (PCINT0) que se activa con cualquier cambio de los puertos activados por interrupcion. El timer se con-
-figura de tal manera que desborde cada 32mS, para luego poder saber que tiempo representa la cuenta actual. La maxima distancia medible
-da como respuesta un pulso de 25mS de ancho y, en caso de que el sensor no detecte ningun objeto dentro del rango de medicion, dara como 
-respuesta un pulso de 38mS. Por esto, el criterio que se tuvo en cuenta al momento de calcular fue que si hubo desborde del timer3 antes
-de haber recibido el final del pulso, entonces no hay objeto en el rango de medicion.
+	-Driver de Ultrasónico: Realiza la medicion mandando un pulso por el pin al cual esta conectado el sensor (en este caso es el RA7) de 10uS, y cuando llega la respuesta utiliza el Timer3 para cronometrar el tiempo. El inicio y fin del cronometrado se lleva a cabo con las interrupciones del puerto A (PCINT0) que se activa con cualquier cambio de los puertos activados por interrupcion. El timer se configura de tal manera que desborde cada 32mS, para luego poder saber que tiempo representa la cuenta actual. La maxima distancia medible
+da como respuesta un pulso de 25mS de ancho y, en caso de que el sensor no detecte ningun objeto dentro del rango de medicion, dara como respuesta un pulso de 38mS. Por esto, el criterio que se tuvo en cuenta al momento de calcular fue que si hubo desborde del timer3 antes de haber recibido el final del pulso, entonces no hay objeto en el rango de medicion.
 
-	-Driver de Sensor de Movimiento: El sensor en cuestion entrega en su salida una cadena de pulsos cuando detecta movimiento. No se hizo
-incapie en descifrar el significado de cada cadena de pulsos, sino que se tiene en cuenta solo el primero para actuar de manera debida. 
-La salida del sensor se coloca en las entradas de interrupciones externas del microcontrolador (INT0 e INT1). El driver solo se encarga de
-configurar los flancos de las interrupciones externas, y la activacion o desactivacion, para los casos en que no se desea interrumpir otra
-funcion del programa.
+	-Driver de Sensor de Movimiento: El sensor en cuestion entrega en su salida una cadena de pulsos cuando detecta movimiento. No se hizo incapie en descifrar el significado de cada cadena de pulsos, sino que se tiene en cuenta solo el primero para actuar de manera debida. La salida del sensor se coloca en las entradas de interrupciones externas del microcontrolador (INT0 e INT1). El driver solo se encarga de
+configurar los flancos de las interrupciones externas, y la activacion o desactivacion, para los casos en que no se desea interrumpir otra funcion del programa.
 
-	-Driver de Serial: Encargado de las comunicaciones entrantes y salientes del microcontrolador. Puede configurar cualquiera de los UART
-(0 y 1) y no se utilizan interrupciones. El codigo fue rescatado del trabajo practico 3 de la cursada.
+	-Driver de Serial: Encargado de las comunicaciones entrantes y salientes del microcontrolador. Puede configurar cualquiera de los UART (0 y 1) y no se utilizan interrupciones. El codigo fue rescatado del trabajo practico 3 de la cursada.
 
-	-Driver de GPIO: Permite modificar la direccion (entrada o salida), el estado (1 o 0, para el caso que este como salida), y leer el 
-estado (independientemente de si es entrada o salida). IMPORTANTE: Las variables de entrada en la creacion de un objeto GPIO, son DDRx 
-y PINx (y no PORTx), ya que PORTx se utiliza para leer el valor de las entradas. El valor del pin a utilizar es igual a la posicion y no
-al numero en hexadecimal (ie: para RA5 se coloca 5, y no 0x20)
+	-Driver de GPIO: Permite modificar la direccion (entrada o salida), el estado (1 o 0, para el caso que este como salida), y leer el estado (independientemente de si es entrada o salida). IMPORTANTE: Las variables de entrada en la creacion de un objeto GPIO, son DDRx y PINx (y no PORTx), ya que PORTx se utiliza para leer el valor de las entradas. El valor del pin a utilizar es igual a la posicion y no al numero en hexadecimal (ie: para RA5 se coloca 5, y no 0x20)
 
 --------------------------------------------------------------------------------------------------------------------------------------
 +Compilación, carga y pre-test del programa:
-	- Para compilarlo basta con situarse en el directorio en donde se encuentra el archivo Makefile del proyecto y ejecutar el 
-comando 'make'. 
 
-	- Para cargar (flashear) el programa a la memoria del robot se usa el programa hiduploader. Antes de hacer esto es
-necesario desconectar del robot el cable Rx y Tx (los que estan conectados en los pines 0 y 1, respectivamente). Ya desconectado puede 
-ejecutarse el comando completo con sus respectivos argumentos: 'hiduploader -mmcu=atmega1284p -v -usb=0x2842,0x0001 mainGamma.hex'.
+	- Para compilarlo basta con situarse en el directorio en donde se encuentra el archivo Makefile del proyecto y ejecutar el comando 'make'. Ver observaciones al final de la documentación para ver en que directorio colocar los fuentes del proyecto.
+
+	- Para cargar (flashear) el programa a la memoria del robot se usa el programa hiduploader. Antes de hacer esto es necesario desconectar del robot el cable Rx y Tx (los que estan conectados en los pines 0 y 1, respectivamente). Ya desconectado puede ejecutarse el comando completo con sus respectivos argumentos: 'hiduploader -mmcu=atmega1284p -v -usb=0x2842,0x0001 mainGamma.hex'.
 	
 	- Para testear el programa se debe: 
 	1)volver a conectar el cable Rx y Tx. 
 	2)tener conectado el modulo de radio frecuencia en el puerto USB de la computadora. 
-	3)tener colocadas las pilas de 9 volts en los sensores de movimiento: una vez son colocadas, los sensores se ponen a punto en 
-alrededor de 50 segundos, durante el cual los leds parpadean periodicamente. Cuando dejan de parpadear indica que termino la puesta
-a punto.
+	3)tener colocadas las pilas de 9 volts en los sensores de movimiento: una vez son colocadas, los sensores se ponen a punto en alrededor de 50 segundos, durante el cual los leds parpadean periodicamente. Cuando dejan de parpadear indica que termino la puesta a punto.
  	4)tener colocadas las pilas AA del robot.
-	5)ejecutar el programa minicom, allí son ingresadoslos comandos que el robot va a interpretar. La puerta serial debe estar 
-configurada en 9600.
+	5)ejecutar el programa minicom, allí son ingresadoslos comandos que el robot va a interpretar. La puerta serial debe estar configurada en 9600.
 --------------------------------------------------------------------------------------------------------------------------------------
 +Casos de test y/o descripción de la salida esperada:
 
@@ -80,31 +53,30 @@ configurada en 9600.
 	- Inicialmente los sensores de movimiento detectan movimiento pero no hacen girar al robot, 
 para esto se debe dar la orden especificamente.
 	
-	- Presionando la letra 'b' se activan los sensores de movimiento para que estos hagan girar al robot. Si es el sensor izquierdo
-quien detecta, entonces el robot gira hacia la izquierda; si es el sensor derecho, el robot dobla hacia la derecha. En ambos casos
-el robot gira aproximadamente 90 grados centigrados (?).
+	- Presionando la letra 'b' se activan los sensores de movimiento para que estos hagan girar al robot. Si es el sensor izquierdo quien detecta, entonces el robot gira hacia la izquierda; si es el sensor derecho, el robot dobla hacia la derecha. En ambos casos el robot gira aproximadamente 90 grados centigrados (?).
 	
-	- Presionando la letra 'x' se desactiva los sensores de movimiento, por lo tanto el robot deja de girar cuando los sensores
-detectan movimiento.
+	- Presionando la letra 'x' se desactiva los sensores de movimiento, por lo tanto el robot deja de girar cuando los sensores detectan movimiento.
 	
-	- Para mover el robot desde la computadora (usando radio frecuencia) se usan las letras: 'w'-> avanzar, 's'-> retroceder,
-'a'-> girar hacia la izquierda y 'd'-> girar hacia la derecha.
+	- Para mover el robot desde la computadora (usando radio frecuencia) se usan las letras: 'w'-> avanzar, 's'-> retroceder, 'a'-> girar hacia la izquierda y 'd'-> girar hacia la derecha.
 	
 	- Las mediciones realizadas por el sensor ultrasónico tienen los siguientes consecuencias: 
-	1) Si la distancia obtenida hasta el objeto detectado es menor a 25 centimentros se entra en estado de "alerta", mostrando un 
-mensaje en pantalla. Esto produce que no se pueda seguir avanzando con el robot (aunque se le dé la orden de hacerlo) y de que el 
-led bicolor esté en rojo. Puede sin embargo, girar en cualquier sentido y retroceder.
+	1) Si la distancia obtenida hasta el objeto detectado es menor a 25 centimentros se entra en estado de "alerta", mostrando un mensaje en pantalla. Esto produce que no se pueda seguir avanzando con el robot (aunque se le dé la orden de hacerlo) y de que el led bicolor esté en rojo. Puede sin embargo, girar en cualquier sentido y retroceder.
 	2) Cuando la distancia es mayor a 25 centimetros, el robot puede avanzar libremente.
 	3) Por último, las mediciones realizadas son enviadas a la computadora para que se muestren en ella, a través del programa 
-minicom, la distancia medida en centimetros hasta el objeto detectado por el sensor. En este caso el rango exacto que interesa mostrar
-va de 1 a 99 centimetros, cuando la distancia medida es mayor a este último rango se lo muestra la pantalla de la computadora como
-'>99'.
+minicom, la distancia medida en centimetros hasta el objeto detectado por el sensor. En este caso el rango exacto que interesa mostrar va de 1 a 99 centimetros, cuando la distancia medida es mayor a este último rango se lo muestra la pantalla de la computadora como'>99'.
 --------------------------------------------------------------------------------------------------------------------------------------
 
 Observaciones:
-- El esquematico del circuito del robot no representa el circuito real, ya que el sensor S0 del esquematico es en realidad el sensor
-S5 del robot.
-- Si se utiliza el UART0 del microcontrolador, es necesario desconectar cualquier periferico, ya que el programador utiliza los mismos
-pines para programar.
-- El makefile del programa funciona solo si los archivos estan ubicados dentro de la carpeta FreeRTOS_DuinoBot_apps/apps/version\ modularizada,
-ya que se utiliza una ruta relativa (en lugar de absoluta) para encontrar los archivos fuente de FreeRTOS.
+- El módulo de radio frecuencia es un APC-220 (www.ctmelectronica.com.ar).
+
+- Dado que al avanzar el robot presentaba una leve desviación hacia uno de sus lados, fue modificado el pwm de
+uno de los motores en el método M_Adelante de motor.cpp. 
+
+- Respecto a los sensores de movimiento cabe destacar que cuando se detecta movimiento y el robot realiza el
+desplazamiento, este movimiento hace que, en varias oportunidades, se vuelvan a activar los sensores, produciendo de esta manera un sinfin de movimientos.
+
+- El esquematico del circuito del robot no representa el circuito real, ya que el sensor S0 del esquematico es en realidad el sensor S5 del robot.
+
+- Si se utiliza el UART0 del microcontrolador, es necesario desconectar cualquier periferico, ya que el programador utiliza los mismos pines para programar.
+
+- El makefile del programa funciona solo si los archivos estan ubicados dentro de la carpeta FreeRTOS_DuinoBot_apps/apps/version\ modularizada, ya que se utiliza una ruta relativa (en lugar de absoluta) para encontrar los archivos fuente de FreeRTOS.
